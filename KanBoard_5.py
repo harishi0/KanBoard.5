@@ -1,5 +1,7 @@
 import pygame
 from pygame.locals import *
+import tkinter as tk
+from tkinter import colorchooser
 
 WIDTH = 2880
 HEIGHT = 1800
@@ -15,6 +17,7 @@ def handle_mouse_button(pos, button_states):
     button_states["eraser"] = button_rect_collide(pos, button_states["eraser_button_rect"])
     button_states["clear"] = button_rect_collide(pos, button_states["clear_button_rect"])
     button_states["slider"] = button_rect_collide(pos, button_states["slider_width_rect"])
+    button_states["color_picker"] = button_rect_collide(pos, button_states["color_picker_rect"])
     button_states["save"] = button_rect_collide(pos, button_states["save_button_rect"])
     button_states["load"] = button_rect_collide(pos, button_states["load_button_rect"])
 
@@ -34,12 +37,16 @@ def handle_mouse_button(pos, button_states):
     elif button_states["load"]:
         load_canvas(button_states)
 
+    if button_states["color_picker"]:
+        button_states["color"] = choose_color()
+
     # Update button states
     button_states["black"] = button_states["black_button_rect"].collidepoint(pos)
     button_states["blue"] = button_states["blue_button_rect"].collidepoint(pos)
     button_states["eraser"] = button_states["eraser_button_rect"].collidepoint(pos)
     button_states["save"] = button_states["save_button_rect"].collidepoint(pos)
     button_states["load"] = button_states["load_button_rect"].collidepoint(pos)
+    button_states["color_picker"] = button_states["color_picker_rect"].collidepoint(pos)
 
 def start_drawing(pos, button_states):
     button_states["drawing"] = True
@@ -111,6 +118,12 @@ def load_canvas(button_states):
     except pygame.error:
         print("Could not load canvas from whiteboard.png")
 
+def choose_color():
+    root = tk.Tk()
+    root.withdraw()
+    color = colorchooser.askcolor()[0]
+    return tuple(int(c) for c in color)
+
 def run():
     pygame.init()
     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
@@ -128,7 +141,8 @@ def run():
         "clear_button_rect": pygame.Rect(340, 10, 100, 50),
         "save_button_rect": pygame.Rect(450, 10, 100, 50),
         "load_button_rect": pygame.Rect(560, 10, 100, 50),
-        "slider_width_rect": pygame.Rect(680, 10, 200, 20),
+        "color_picker_rect": pygame.Rect(680, 10, 100, 50),
+        "slider_width_rect": pygame.Rect(790, 10, 200, 20),
         "drawing": False,
         "last_pos": None,
         "color": BLACK,
@@ -138,7 +152,8 @@ def run():
         "blue": False,
         "eraser": False,
         "clear": False,
-        "slider": False
+        "slider": False,
+        "color_picker": False
     }
 
     running = True
@@ -150,6 +165,8 @@ def run():
                 handle_mouse_button(event.pos, button_states)
                 if event.button == 1 and button_states["slider"]:
                     button_states["dragging"] = True
+                elif event.button == 1 and button_states["color_picker"]:
+                    button_states["color"] = choose_color()
             elif event.type == pygame.MOUSEMOTION:
                 handle_mouse_motion(event.pos, button_states)
             elif event.type == pygame.MOUSEBUTTONUP:
@@ -166,6 +183,7 @@ def run():
         pygame.draw.rect(screen, BLACK, button_states["clear_button_rect"])
         pygame.draw.rect(screen, BLACK, button_states["save_button_rect"])
         pygame.draw.rect(screen, BLACK, button_states["load_button_rect"])
+        pygame.draw.rect(screen, button_states["color"], button_states["color_picker_rect"])
 
         # Draw the button labels
         button_font = pygame.font.SysFont("Arial", 20)
