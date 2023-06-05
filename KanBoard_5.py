@@ -21,7 +21,7 @@ def handle_mouse_button(pos, button_states):
     button_states["color_picker"] = button_states["color_picker_rect"].collidepoint(pos)
     button_states["save"] = button_states["save_button_rect"].collidepoint(pos)
     button_states["load"] = button_states["load_button_rect"].collidepoint(pos)
-    button_states["back"] = button_states["back_button_rect"].collidepoint(pos)  # New
+    button_states["back"] = button_states["back_button_rect"].collidepoint(pos)
 
     if button_states["canvas_rect"].collidepoint(pos):
         start_drawing(pos, button_states)
@@ -38,13 +38,13 @@ def handle_mouse_button(pos, button_states):
         save_canvas(button_states["canvas"])
     elif button_states["load"]:
         load_canvas(button_states)
-    elif button_states["back"]:  # New
+    elif button_states["back"]:
         back_button_action()
 
     if button_states["color_picker"]:
         button_states["color"] = choose_color()
 
-def back_button_action():  # New
+def back_button_action():
     print("Back button clicked")
     # Add your code here to handle the action when the "Back" button is clicked
 
@@ -128,13 +128,14 @@ def run():
         "canvas_rect": pygame.Rect(0, 0, info.current_w, info.current_h),
         "black_button_rect": pygame.Rect(10, 10, 100, 50),
         "blue_button_rect": pygame.Rect(120, 10, 100, 50),
-        "eraser_button_rect": pygame.Rect(230, 10, 100, 50),
-        "clear_button_rect": pygame.Rect(340, 10, 100, 50),
-        "save_button_rect": pygame.Rect(450, 10, 100, 50),
-        "load_button_rect": pygame.Rect(560, 10, 100, 50),
-        "color_picker_rect": pygame.Rect(680, 10, 100, 50),
-        "slider_width_rect": pygame.Rect(790, 10, 200, 20),
-        "back_button_rect": pygame.Rect((info.current_w // 2) - 50, info.current_h - 60, 100, 50),  # New
+        "color_picker_rect": pygame.Rect(230, 10, 100, 50),  # Added color_picker_rect
+        "color_choice_rect": pygame.Rect(340, 10, 100, 50),
+        "eraser_button_rect": pygame.Rect(450, 10, 100, 50),
+        "clear_button_rect": pygame.Rect(560, 10, 100, 50),
+        "save_button_rect": pygame.Rect(670, 10, 100, 50),
+        "load_button_rect": pygame.Rect(780, 10, 100, 50),        
+        "slider_width_rect": pygame.Rect(890, 10, 200, 20),
+        "back_button_rect": pygame.Rect((info.current_w - 100) // 2, info.current_h - 60, 100, 50),
         "drawing": False,
         "last_pos": None,
         "color": BLACK,
@@ -146,12 +147,8 @@ def run():
         "clear": False,
         "slider": False,
         "color_picker": False,
-        "back": False  # New
+        "back": False
     }
-
-    def back_button_action():
-        print("Back button clicked")
-        # Add your code here to handle the action when the "Back" button is clicked
 
     running = True
     while running:
@@ -180,12 +177,13 @@ def run():
         # Draw the buttons
         pygame.draw.rect(screen, BLACK, button_states["black_button_rect"])
         pygame.draw.rect(screen, BLUE, button_states["blue_button_rect"])
+        pygame.draw.rect(screen, BLACK, button_states["color_picker_rect"])
         pygame.draw.rect(screen, BLACK, button_states["eraser_button_rect"])
         pygame.draw.rect(screen, BLACK, button_states["clear_button_rect"])
         pygame.draw.rect(screen, BLACK, button_states["save_button_rect"])
         pygame.draw.rect(screen, BLACK, button_states["load_button_rect"])
-        pygame.draw.rect(screen, button_states["color"], button_states["color_picker_rect"])
-        pygame.draw.rect(screen, BLACK, button_states["back_button_rect"])  # New
+        pygame.draw.rect(screen, button_states["color"], button_states["color_choice_rect"])
+        pygame.draw.rect(screen, BLACK, button_states["back_button_rect"])
 
         # Draw the button labels
         button_font = pygame.font.SysFont("Arial", 20)
@@ -195,7 +193,9 @@ def run():
         screen.blit(button_font.render("Clear", True, WHITE), (button_states["clear_button_rect"].x + 20, button_states["clear_button_rect"].y + 10))
         screen.blit(button_font.render("Save", True, WHITE), (button_states["save_button_rect"].x + 25, button_states["save_button_rect"].y + 10))
         screen.blit(button_font.render("Load", True, WHITE), (button_states["load_button_rect"].x + 25, button_states["load_button_rect"].y + 10))
-        screen.blit(button_font.render("Back", True, WHITE), (button_states["back_button_rect"].x + 25, button_states["back_button_rect"].y + 10))  # New
+        screen.blit(button_font.render("Back", True, WHITE), (button_states["back_button_rect"].x + 25, button_states["back_button_rect"].y + 10))
+        screen.blit(button_font.render("RGB", True, WHITE), (button_states["color_picker_rect"].x + 30, button_states["color_picker_rect"].y + 5))
+        screen.blit(button_font.render("Selector", True, WHITE), (button_states["color_picker_rect"].x + 20, button_states["color_picker_rect"].y + 25))
 
         # Draw the slider
         pygame.draw.rect(screen, GREY, button_states["slider_width_rect"])
