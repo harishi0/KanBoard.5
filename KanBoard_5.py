@@ -21,6 +21,7 @@ def handle_mouse_button(pos, button_states):
     button_states["color_picker"] = button_states["color_picker_rect"].collidepoint(pos)
     button_states["save"] = button_states["save_button_rect"].collidepoint(pos)
     button_states["load"] = button_states["load_button_rect"].collidepoint(pos)
+    button_states["back"] = button_states["back_button_rect"].collidepoint(pos)  # New
 
     if button_states["canvas_rect"].collidepoint(pos):
         start_drawing(pos, button_states)
@@ -37,9 +38,15 @@ def handle_mouse_button(pos, button_states):
         save_canvas(button_states["canvas"])
     elif button_states["load"]:
         load_canvas(button_states)
+    elif button_states["back"]:  # New
+        back_button_action()
 
     if button_states["color_picker"]:
         button_states["color"] = choose_color()
+
+def back_button_action():  # New
+    print("Back button clicked")
+    # Add your code here to handle the action when the "Back" button is clicked
 
 def start_drawing(pos, button_states):
     button_states["drawing"] = True
@@ -127,6 +134,7 @@ def run():
         "load_button_rect": pygame.Rect(560, 10, 100, 50),
         "color_picker_rect": pygame.Rect(680, 10, 100, 50),
         "slider_width_rect": pygame.Rect(790, 10, 200, 20),
+        "back_button_rect": pygame.Rect((info.current_w // 2) - 50, info.current_h - 60, 100, 50),  # New
         "drawing": False,
         "last_pos": None,
         "color": BLACK,
@@ -137,8 +145,13 @@ def run():
         "eraser": False,
         "clear": False,
         "slider": False,
-        "color_picker": False
+        "color_picker": False,
+        "back": False  # New
     }
+
+    def back_button_action():
+        print("Back button clicked")
+        # Add your code here to handle the action when the "Back" button is clicked
 
     running = True
     while running:
@@ -156,6 +169,10 @@ def run():
             elif event.type == pygame.MOUSEBUTTONUP:
                 button_states["drawing"] = False
                 button_states["dragging"] = False
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                running = False
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_BACKSPACE:
+                back_button_action()  # Trigger back button action on Backspace key press
 
         screen.fill(GREY)
         screen.blit(button_states["canvas"], (0, 0))
@@ -168,6 +185,7 @@ def run():
         pygame.draw.rect(screen, BLACK, button_states["save_button_rect"])
         pygame.draw.rect(screen, BLACK, button_states["load_button_rect"])
         pygame.draw.rect(screen, button_states["color"], button_states["color_picker_rect"])
+        pygame.draw.rect(screen, BLACK, button_states["back_button_rect"])  # New
 
         # Draw the button labels
         button_font = pygame.font.SysFont("Arial", 20)
@@ -177,6 +195,7 @@ def run():
         screen.blit(button_font.render("Clear", True, WHITE), (button_states["clear_button_rect"].x + 20, button_states["clear_button_rect"].y + 10))
         screen.blit(button_font.render("Save", True, WHITE), (button_states["save_button_rect"].x + 25, button_states["save_button_rect"].y + 10))
         screen.blit(button_font.render("Load", True, WHITE), (button_states["load_button_rect"].x + 25, button_states["load_button_rect"].y + 10))
+        screen.blit(button_font.render("Back", True, WHITE), (button_states["back_button_rect"].x + 25, button_states["back_button_rect"].y + 10))  # New
 
         # Draw the slider
         pygame.draw.rect(screen, GREY, button_states["slider_width_rect"])
