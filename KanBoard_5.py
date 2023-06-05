@@ -3,23 +3,24 @@ from pygame.locals import *
 import tkinter as tk
 from tkinter import colorchooser
 
-WIDTH = 2880
-HEIGHT = 1800
+# Colors
 BLACK = (0, 0, 0)
 BLUE = (0, 191, 255)
 WHITE = (255, 255, 255)
 GREY = (220, 220, 220)
+
+# Background color
 background_color = WHITE
 
 def handle_mouse_button(pos, button_states):
-    button_states["black"] = button_rect_collide(pos, button_states["black_button_rect"])
-    button_states["blue"] = button_rect_collide(pos, button_states["blue_button_rect"])
-    button_states["eraser"] = button_rect_collide(pos, button_states["eraser_button_rect"])
-    button_states["clear"] = button_rect_collide(pos, button_states["clear_button_rect"])
-    button_states["slider"] = button_rect_collide(pos, button_states["slider_width_rect"])
-    button_states["color_picker"] = button_rect_collide(pos, button_states["color_picker_rect"])
-    button_states["save"] = button_rect_collide(pos, button_states["save_button_rect"])
-    button_states["load"] = button_rect_collide(pos, button_states["load_button_rect"])
+    button_states["black"] = button_states["black_button_rect"].collidepoint(pos)
+    button_states["blue"] = button_states["blue_button_rect"].collidepoint(pos)
+    button_states["eraser"] = button_states["eraser_button_rect"].collidepoint(pos)
+    button_states["clear"] = button_states["clear_button_rect"].collidepoint(pos)
+    button_states["slider"] = button_states["slider_width_rect"].collidepoint(pos)
+    button_states["color_picker"] = button_states["color_picker_rect"].collidepoint(pos)
+    button_states["save"] = button_states["save_button_rect"].collidepoint(pos)
+    button_states["load"] = button_states["load_button_rect"].collidepoint(pos)
 
     if button_states["canvas_rect"].collidepoint(pos):
         start_drawing(pos, button_states)
@@ -40,14 +41,6 @@ def handle_mouse_button(pos, button_states):
     if button_states["color_picker"]:
         button_states["color"] = choose_color()
 
-    # Update button states
-    button_states["black"] = button_states["black_button_rect"].collidepoint(pos)
-    button_states["blue"] = button_states["blue_button_rect"].collidepoint(pos)
-    button_states["eraser"] = button_states["eraser_button_rect"].collidepoint(pos)
-    button_states["save"] = button_states["save_button_rect"].collidepoint(pos)
-    button_states["load"] = button_states["load_button_rect"].collidepoint(pos)
-    button_states["color_picker"] = button_states["color_picker_rect"].collidepoint(pos)
-
 def start_drawing(pos, button_states):
     button_states["drawing"] = True
     button_states["last_pos"] = pos
@@ -58,9 +51,6 @@ def handle_mouse_motion(pos, button_states):
 
     if button_states["drawing"]:
         draw(pos, button_states)
-        
-def button_rect_collide(pos, rect):
-    return rect.collidepoint(pos)
 
 def draw(pos, button_states):
     if button_states["drawing"]:
@@ -86,11 +76,7 @@ def update_slider_width(pos, button_states):
     if button_states["dragging"]:
         if button_states["slider_width_rect"].left <= pos[0] <= button_states["slider_width_rect"].right:
             # Calculate the new slider width based on the mouse position
-            slider_width = int(
-                (pos[0] - button_states["slider_width_rect"].left)
-                / button_states["slider_width_rect"].width
-                * 19
-            ) + 1
+            slider_width = int((pos[0] - button_states["slider_width_rect"].left) / button_states["slider_width_rect"].width * 19) + 1
             # Limit the slider width to a minimum value of 1
             slider_width = max(slider_width, 5)
             # Limit the slider width to a maximum value of 20 (optional)
@@ -98,11 +84,8 @@ def update_slider_width(pos, button_states):
 
             # Update the slider width and position
             button_states["slider_width"] = slider_width
-            slider_pos = (
-                button_states["slider_width_rect"].left
-                + int((button_states["slider_width"] - 1) / 19 * button_states["slider_width_rect"].width),
-                button_states["slider_width_rect"].centery,
-            )
+            slider_pos = (button_states["slider_width_rect"].left + int((button_states["slider_width"] - 1) / 19 * button_states["slider_width_rect"].width),
+                          button_states["slider_width_rect"].centery)
             button_states["slider_pos"] = slider_pos
 
             # Perform any additional actions based on the updated slider width
@@ -126,15 +109,16 @@ def choose_color():
 
 def run():
     pygame.init()
-    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    info = pygame.display.Info()
+    screen = pygame.display.set_mode((info.current_w, info.current_h), pygame.RESIZABLE)
     clock = pygame.time.Clock()
-    canvas = pygame.Surface((WIDTH, HEIGHT))
+    canvas = pygame.Surface((info.current_w, info.current_h))
     canvas.fill(background_color)
 
     # Button properties
     button_states = {
         "canvas": canvas,
-        "canvas_rect": pygame.Rect(0, 0, WIDTH, HEIGHT),
+        "canvas_rect": pygame.Rect(0, 0, info.current_w, info.current_h),
         "black_button_rect": pygame.Rect(10, 10, 100, 50),
         "blue_button_rect": pygame.Rect(120, 10, 100, 50),
         "eraser_button_rect": pygame.Rect(230, 10, 100, 50),
@@ -197,11 +181,8 @@ def run():
         # Draw the slider
         pygame.draw.rect(screen, GREY, button_states["slider_width_rect"])
         pygame.draw.rect(screen, BLACK, button_states["slider_width_rect"], 2)
-        slider_pos = (
-            button_states["slider_width_rect"].left
-            + int((button_states["slider_width"] - 1) / 19 * button_states["slider_width_rect"].width),
-            button_states["slider_width_rect"].centery,
-        )
+        slider_pos = (button_states["slider_width_rect"].left + int((button_states["slider_width"] - 1) / 19 * button_states["slider_width_rect"].width),
+                      button_states["slider_width_rect"].centery)
         pygame.draw.circle(screen, BLACK, slider_pos, 10)
 
         pygame.display.flip()
