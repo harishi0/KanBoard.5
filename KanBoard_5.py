@@ -14,7 +14,7 @@ background_color = WHITE
 
 #Whiteboard Section
 
-def handle_mouse_button(pos, button_states):
+def handle_mouse_button(pos, button_states, username):
     button_states["black"] = button_states["black_button_rect"].collidepoint(pos)
     button_states["blue"] = button_states["blue_button_rect"].collidepoint(pos)
     button_states["eraser"] = button_states["eraser_button_rect"].collidepoint(pos)
@@ -37,17 +37,17 @@ def handle_mouse_button(pos, button_states):
     elif button_states["clear"]:
         clear_whiteboard(button_states["whiteboard"])
     elif button_states["save"]:
-        save_whiteboard(button_states["whiteboard"])
+        save_whiteboard(button_states["whiteboard"], username)
     elif button_states["load"]:
-        load_whiteboard(button_states)
+        load_whiteboard(button_states, username)
     elif button_states["back"]:
-        back_button_action()
+        back_button_action(username)
 
     if button_states["color_picker"]:
         button_states["color"] = choose_color()
 
-def back_button_action():
-    menu_buttons()
+def back_button_action(username):
+    menu_buttons(username)
     # Add your code here to handle the action when the "Back" button is clicked
 
 def start_drawing(pos, button_states):
@@ -99,16 +99,24 @@ def update_slider_width(pos, button_states):
 
             # Perform any additional actions based on the updated slider width
 
-def save_whiteboard(whiteboard):
-    pygame.image.save(whiteboard, "whiteboard.png")
-    print("whiteboard saved as whiteboard.png")
+def save_whiteboard(whiteboard, username):
+    folder_path = os.path.join("user_data", username)  # Create a folder path based on the username
+    os.makedirs(folder_path, exist_ok=True)  # Create the folder if it doesn't exist
+    filename = os.path.join(folder_path, f"{username}_whiteboard.png")  # Use the folder path to create the filename
+    pygame.image.save(whiteboard, filename)
+    print(f"Whiteboard saved as {filename}")
 
-def load_whiteboard(button_states):
+
+def load_whiteboard(button_states, username):
+    folder_path = os.path.join("user_data", username)  # Create a folder path based on the username
+    filename = os.path.join(folder_path, f"{username}_whiteboard.png")  # Use the folder path to create the filename
+
     try:
-        button_states["whiteboard"] = pygame.image.load("whiteboard.png").convert()
-        print("whiteboard loaded from whiteboard.png")
+        button_states["whiteboard"] = pygame.image.load(filename).convert()
+        print(f"Whiteboard loaded from {filename}")
     except pygame.error:
-        print("Could not load whiteboard from whiteboard.png")
+        print(f"Could not load whiteboard from {filename}")
+
 
 def choose_color():
     root = tk.Tk()
@@ -116,7 +124,7 @@ def choose_color():
     color = colorchooser.askcolor()[0]
     return tuple(int(c) for c in color)
 
-def run():
+def run(username):
     pygame.init()
     info = pygame.display.Info()
     screen = pygame.display.set_mode((info.current_w, info.current_h), pygame.RESIZABLE)
@@ -158,7 +166,7 @@ def run():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                handle_mouse_button(event.pos, button_states)
+                handle_mouse_button(event.pos, button_states, username)  # Pass the username here
                 if event.button == 1 and button_states["slider"]:
                     button_states["dragging"] = True
                 elif event.button == 1 and button_states["color_picker"]:
@@ -171,7 +179,7 @@ def run():
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 running = False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_BACKSPACE:
-                back_button_action()  # Trigger back button action on Backspace key press
+                back_button_action(username)  # Trigger back button action on Backspace key press
 
         screen.blit(button_states["whiteboard"], (0, 0))
 
@@ -212,9 +220,9 @@ def run():
 
 #Menu Section
 
-def menu_button_action(label):
+def menu_button_action(label, username):
     if label == "Whiteboard":
-        run()
+        run(username)
         
     elif label == "Kanban Board":
         print("Kanban Board button clicked")
@@ -229,7 +237,7 @@ def menu_button_action(label):
         pygame.quit()
         sys.exit()
 
-def menu_buttons():
+def menu_buttons(username):
     pygame.init()
     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     clock = pygame.time.Clock()
@@ -259,7 +267,7 @@ def menu_buttons():
                             button_height
                         )
                         if button_rect.collidepoint(mouse_pos):
-                            menu_button_action(label)
+                            menu_button_action(label, username)
 
         screen.fill((255, 255, 255))
 
@@ -356,7 +364,7 @@ def login():
                                 user_folder = os.path.join("user_data", username)
                                 if not os.path.exists(user_folder):
                                     os.makedirs(user_folder)
-                                menu_buttons()
+                                menu_buttons(username)
     
                             if not login_validity:
                                 invalid_login_text = "Invalid Login"
