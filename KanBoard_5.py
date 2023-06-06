@@ -309,7 +309,7 @@ def login():
     # Button variables
     button_signup = pygame.Rect(screen_width // 2 - 50, password_y + 80, 100, 30)
     button_color = BLACK
-    button_text = "Sign Up"
+    button_text = "Sign In"
 
     # Invalid Login message variables
     invalid_login_text = ""
@@ -353,6 +353,9 @@ def login():
                                 print("Credentials Matched")
                                 login_validity = True
                                 invalid_login_text = ""
+                                user_folder = os.path.join("user_data", username)
+                                if not os.path.exists(user_folder):
+                                    os.makedirs(user_folder)
                                 menu_buttons()
     
                             if not login_validity:
