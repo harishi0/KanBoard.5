@@ -8,8 +8,9 @@ def run_timer():
     pygame.init()
 
     # Set the height and width of the screen
-    size = [700, 500]
-    screen = pygame.display.set_mode(size)
+    
+    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+   
 
     pygame.display.set_caption("Timer")
 
