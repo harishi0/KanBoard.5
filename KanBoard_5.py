@@ -12,7 +12,7 @@ BLUE = (0, 191, 255)
 GREY = (220, 220, 220)
 background_color = WHITE
 
-#Whiteboard
+#Whiteboard Section
 
 def handle_mouse_button(pos, button_states):
     button_states["black"] = button_states["black_button_rect"].collidepoint(pos)
@@ -210,7 +210,7 @@ def run():
 
     pygame.quit()
 
-#Menu
+#Menu Section
 
 def menu_button_action(label):
     if label == "Whiteboard":
@@ -282,7 +282,7 @@ def menu_buttons():
         pygame.display.flip()
         clock.tick(30)
 
-#Login
+#Login Section
 
 def login():
     pygame.init()
