@@ -1,139 +1,79 @@
-import pygame
+import time
+from tkinter import *
+from tkinter import messagebox
 
 def run_timer():
-    # Define some colors
-    BLACK = (0, 0, 0)
-    WHITE = (255, 255, 255)
-
-    pygame.init()
-
-    # Set the height and width of the screen
-    
-    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-   
-
-    pygame.display.set_caption("Timer")
-
-    # Loop until the user clicks the close button.
-    done = False
-
-    # Used to manage how fast the screen updates
-    clock = pygame.time.Clock()
-
-    font = pygame.font.Font(None, 25)
-
-    frame_count = 0
-    frame_rate = 60
-
-    # Flag to determine if start time input is complete
-    start_time_input_complete = False
-    start_time = ""
-
-    # Flag to determine if the timer is running
-    timer_running = False
-
-    # Button dimensions and properties
-    button_width = 100
-    button_height = 50
-    button_x = 300
-    button_y = 200
-    button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
-
-    # -------- Main Program Loop -----------
-    while not done:
-        for event in pygame.event.get():  # User did something
-            if event.type == pygame.QUIT:  # If user clicked close
-                done = True  # Flag that we are done so we exit this loop
-
-            # Check for keyboard events
-            if event.type == pygame.KEYDOWN:
-                # If start time input is not complete
-                if not start_time_input_complete:
-                    # Check if the key pressed is a number key
-                    if pygame.K_0 <= event.key <= pygame.K_9:
-                        start_time += pygame.key.name(event.key)  # Append the pressed number key to the start time string
-                    # Check if the key pressed is the Backspace key
-                    elif event.key == pygame.K_BACKSPACE:
-                        start_time = start_time[:-1]  # Remove the last character from the start time string
-                    # Check if the key pressed is the Enter key
-                    elif event.key == pygame.K_RETURN:
-                        if start_time != "":
-                            start_time = int(start_time)  # Convert the start time string to an integer
-                            start_time_input_complete = True
-
-            # Check for mouse events
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                # Check if the left mouse button is clicked within the button rectangle
-                if event.button == 1 and button_rect.collidepoint(event.pos):
-                    timer_running = True
-
-        # Set the screen background
-        screen.fill(WHITE)
-
-        # Display start time input prompt until input is complete
-        if not start_time_input_complete:
-            prompt_string = "Enter start time in seconds: " + start_time
-            prompt_text = font.render(prompt_string, True, BLACK)
-            screen.blit(prompt_text, [250, 250])
+    def submit():
+        nonlocal paused
+        if paused:
+            paused = False
         else:
-            # --- Timer going up ---
-            # Calculate total seconds
-            total_seconds = frame_count // frame_rate
+            try:
+                temp = int(hour.get()) * 3600 + int(minute.get()) * 60 + int(second.get())
+            except ValueError:
+                messagebox.showerror("Error", "Please input the right value")
+                return
 
-            # Divide by 60 to get total minutes
-            minutes = total_seconds // 60
+            while temp > -1 and not paused:
+                mins, secs = divmod(temp, 60)
+                hours = 0
 
-            # Use modulus (remainder) to get seconds
-            seconds = total_seconds % 60
+                if mins > 60:
+                    hours, mins = divmod(mins, 60)
 
-            # Use python string formatting to format in leading zeros
-            output_string = "Time: {0:02}:{1:02}".format(minutes, seconds)
+                hour.set("{0:02d}".format(hours))
+                minute.set("{0:02d}".format(mins))
+                second.set("{0:02d}".format(secs))
 
-            # Blit to the screen
-            text = font.render(output_string, True, BLACK)
-            screen.blit(text, [250, 250])
+                root.update()
+                time.sleep(1)
 
-            # --- Timer going down ---
-            if timer_running:
-                # Calculate total seconds
-               
-                total_seconds = start_time - (frame_count // frame_rate)
-                if total_seconds < 0:
-                    total_seconds = 0
-                # Divide by 60 to get total minutes
-                minutes = total_seconds // 60
+                if temp == 0:
+                    messagebox.showinfo("Time Countdown", "Time's up")
 
-                # Use modulus (remainder) to get seconds
-                seconds = total_seconds % 60
+                temp -= 1
 
-                # Use python string formatting to format in leading zeros
-                output_string = "Time left: {0:02}:{1:02}".format(minutes, seconds)
+    def pause():
+        nonlocal paused
+        paused = not paused
 
-                # Blit to the screen
-                text = font.render(output_string, True, BLACK)
-                screen.blit(text, [250, 280])
+    def reset():
+        hour.set("00")
+        minute.set("00")
+        second.set("00")
 
-        # Draw the start button
-        pygame.draw.rect(screen, BLACK, button_rect)
-        button_text = font.render("Start", True, WHITE)
-        button_text_rect = button_text.get_rect(center=button_rect.center)
-        screen.blit(button_text, button_text_rect)
+    root = Tk()
+    root.geometry("300x250")
+    root.title("Time Counter")
 
-        # Check if the timer is running and reset the frame count if the button is clicked again
-        if not timer_running:
-            frame_count = 0
+    hour = StringVar()
+    minute = StringVar()
+    second = StringVar()
 
-        # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
+    hour.set("00")
+    minute.set("00")
+    second.set("00")
 
-        frame_count += 1
+    hourEntry = Entry(root, width=3, font=("Arial", 18, ""), textvariable=hour)
+    hourEntry.place(x=80, y=20)
 
-        # Limit frames per second
-        clock.tick(frame_rate)
+    minuteEntry = Entry(root, width=3, font=("Arial", 18, ""), textvariable=minute)
+    minuteEntry.place(x=130, y=20)
 
-        # Go ahead and update the screen with what we've drawn.
-        pygame.display.flip()
+    secondEntry = Entry(root, width=3, font=("Arial", 18, ""), textvariable=second)
+    secondEntry.place(x=180, y=20)
 
-    # Be IDLE friendly. If you forget this line, the program will 'hang' on exit.
-    pygame.quit()
+    btn = Button(root, text='Start Timer', bd='5', command=submit)
+    btn.place(x=70, y=120)
+
+    pause_btn = Button(root, text='Pause', bd='5', command=pause)
+    pause_btn.place(x=170, y=120)
+
+    reset_btn = Button(root, text='Reset', bd='5', command=reset)
+    reset_btn.place(x=130, y=160)
+
+    paused = False
+
+    root.mainloop()
 
 run_timer()
