@@ -6,6 +6,14 @@ import sys
 import tkinter as tk
 from tkinter import colorchooser
 
+def color_values():
+    WHITE = (255, 255, 255)
+    BLACK = (0, 0, 0)
+    BLUE = (0, 191, 255)
+    background_color = WHITE
+    GREY = (220, 220, 220)
+    return WHITE, BLACK, BLUE, background_color, GREY
+
 def login():
     pygame.init()
 
