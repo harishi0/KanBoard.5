@@ -1,6 +1,5 @@
 import pygame
 import calendar
-import os
 
 # Initialize Pygame
 pygame.init()
@@ -71,25 +70,6 @@ def load_calendar():
         print("Calendar edition file not found.")
     except IOError:
         print("Error occurred while loading the calendar edition.")
-
-# Function to create the calendar edition file
-def create_file():
-    if not os.path.isfile("calendar_notes.txt"):
-        try:
-            open("calendar_notes.txt", "w").close()
-            print("File created successfully.")
-        except IOError:
-            print("Error occurred while creating the file.")
-    else:
-        print("File already exists.")
-
-# Function to delete the calendar edition file
-def delete_file():
-    try:
-        os.remove("calendar_notes.txt")
-        print("File deleted successfully.")
-    except OSError:
-        print("Error occurred while deleting the file.")
 
 # Load the calendar edition
 load_calendar()
@@ -190,36 +170,8 @@ try:
         input_surface = font.render(input_text, True, BLACK)
         window.blit(input_surface, (cell_width, WINDOW_HEIGHT - FONT_SIZE))
 
-        # Create file button
-        create_file_button = pygame.Rect(10, 10, 120, 40)
-        pygame.draw.rect(window, (150, 150, 150), create_file_button)
-        create_file_text = font.render("Create File", True, (255, 255, 255))
-        window.blit(create_file_text, (create_file_button.x + 10, create_file_button.y + 10))
-
-        # Delete file button
-        delete_file_button = pygame.Rect(140, 10, 120, 40)
-        pygame.draw.rect(window, (150, 150, 150), delete_file_button)
-        delete_file_text = font.render("Delete File", True, (255, 255, 255))
-        window.blit(delete_file_text, (delete_file_button.x + 10, delete_file_button.y + 10))
-
-        # Save button
-        save_button = pygame.Rect(WINDOW_WIDTH - 130, 10, 120, 40)
-        pygame.draw.rect(window, (150, 150, 150), save_button)
-        save_text = font.render("Save", True, (255, 255, 255))
-        window.blit(save_text, (save_button.x + 10, save_button.y + 10))
-
         # Update the display
         pygame.display.flip()
-
-        # Check for button clicks
-        mouse_pos = pygame.mouse.get_pos()
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            if create_file_button.collidepoint(mouse_pos):
-                create_file()
-            elif delete_file_button.collidepoint(mouse_pos):
-                delete_file()
-            elif save_button.collidepoint(mouse_pos):
-                save_calendar()
 
         # Limit the frame rate
         clock.tick(60)
