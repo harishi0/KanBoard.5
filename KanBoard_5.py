@@ -107,19 +107,23 @@ def save_whiteboard(whiteboard, username):
     os.makedirs(folder_path, exist_ok=True)  # Create the folder if it doesn't exist
     filename = os.path.join(folder_path, f"{username}_whiteboard.png")  # Use the folder path to create the filename
     pygame.image.save(whiteboard, filename)
-    print(f"Whiteboard saved as {filename}")
-
 
 def load_whiteboard(button_states, username):
     folder_path = os.path.join("user_data", username)  # Create a folder path based on the username
     filename = os.path.join(folder_path, f"{username}_whiteboard.png")  # Use the folder path to create the filename
-
     try:
-        button_states["whiteboard"] = pygame.image.load(filename).convert()
-        print(f"Whiteboard loaded from {filename}")
+        if os.path.exists(filename):
+            button_states["whiteboard"] = pygame.image.load(filename).convert()
+        else:
+            font = pygame.font.Font(None, 36)
+            load_error_text = font.render("Image not found", True, (255, 0, 0))
+            load_error_text_rect = load_error_text.get_rect(center=screen.get_rect().center)
+            screen.blit(load_error_text, load_error_text_rect)
+            pygame.display.flip()
+            pygame.time.wait(1 * 1000)
+
     except pygame.error:
         print(f"Could not load whiteboard from {filename}")
-
 
 def choose_color():
     root = tk.Tk()
@@ -185,6 +189,8 @@ def run(username):
                 back_button_action(username)  # Trigger back button action on Backspace key press
 
         screen.blit(button_states["whiteboard"], (0, 0))
+        
+        
 
         # Draw the buttons
         pygame.draw.rect(screen, BLACK, button_states["black_button_rect"])
@@ -212,8 +218,7 @@ def run(username):
         # Draw the slider
         pygame.draw.rect(screen, GREY, button_states["slider_width_rect"])
         pygame.draw.rect(screen, BLACK, button_states["slider_width_rect"], 2)
-        slider_pos = (button_states["slider_width_rect"].left + int((button_states["slider_width"] - 1) / 19 * button_states["slider_width_rect"].width),
-                    button_states["slider_width_rect"].centery)
+        slider_pos = (button_states["slider_width_rect"].left + int((button_states["slider_width"] - 1) / 19 * button_states["slider_width_rect"].width), button_states["slider_width_rect"].centery)
         pygame.draw.circle(screen, BLACK, slider_pos, 10)
 
         pygame.display.flip()
@@ -318,9 +323,11 @@ def login():
     password_y = username_y + 100
 
     # Button variables
-    button_signup = pygame.Rect(screen_width // 2 - 50, password_y + 80, 100, 30)
+    button_login = pygame.Rect(screen_width // 2 - 50, password_y + 80, 100, 30)
+    button_signup = pygame.Rect(screen_width // 2 - 50, password_y + 120, 100, 30)
     button_color = BLACK
-    button_text = "Sign In"
+    button_login_text = "Log In"
+    button_signup_text = "Sign up"
 
     # Invalid Login message variables
     invalid_login_text = ""
@@ -353,7 +360,7 @@ def login():
                     active_field = "password"
                     username_outline_color = BLACK
                     password_outline_color = GREY
-                elif button_signup.collidepoint(mouse_pos):
+                elif button_login.collidepoint(mouse_pos):
                     folder = os.getcwd()
                     fileName = folder + "\\accounts.csv"
                     with open(fileName, "r") as csvFile:
@@ -408,10 +415,17 @@ def login():
         password_text_rect = password_text.get_rect(center=password_rect.center)
         screen.blit(password_text, password_text_rect)
 
+        # Draw Log in button
+        pygame.draw.rect(screen, button_color, button_login)
+        button_font = pygame.font.Font(None, 24)
+        button_text_rendered = button_font.render(button_login_text, True, WHITE)
+        button_text_rect = button_text_rendered.get_rect(center=button_login.center)
+        screen.blit(button_text_rendered, button_text_rect)
+        
         # Draw sign up button
         pygame.draw.rect(screen, button_color, button_signup)
         button_font = pygame.font.Font(None, 24)
-        button_text_rendered = button_font.render(button_text, True, WHITE)
+        button_text_rendered = button_font.render(button_signup_text, True, WHITE)
         button_text_rect = button_text_rendered.get_rect(center=button_signup.center)
         screen.blit(button_text_rendered, button_text_rect)
 
@@ -421,17 +435,13 @@ def login():
         
         pygame.display.flip()
         clock.tick(60)
-        
 
-    pygame.quit()
-    
-    
 def signup():
     pygame.init()
 
     # Set up the screen
     #screen = pygame.display.set_mode((0, 0), FULLSCREEN)
-    pygame.display.set_caption("Log into KanBoard.5")
+    pygame.display.set_caption("Sign up for KanBoard.5")
     screen_width, screen_height = pygame.display.get_surface().get_size()
 
     clock = pygame.time.Clock()
@@ -451,7 +461,7 @@ def signup():
     # Button variables
     button_signup = pygame.Rect(screen_width // 2 - 50, password_y + 80, 100, 30)
     button_color = BLACK
-    button_text = "Sign In"
+    button_text = "Sign Up"
 
     # Invalid Login message variables
     invalid_login_text = ""
@@ -552,7 +562,6 @@ def signup():
         
         pygame.display.flip()
         clock.tick(60)
-        
 
     pygame.quit()
 
