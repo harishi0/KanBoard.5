@@ -95,7 +95,7 @@ try:
                     if current_month == 13:
                         current_month = 1
                         current_year += 1
-                elif event.key == pygame.K_s:
+                elif event.key == pygame.K_RETURN:
                     # Save note for the current day
                     if input_text != "":
                         notes[(current_year, current_month, current_day)] = input_text
@@ -141,6 +141,13 @@ try:
 
         # Render the calendar
         cal_data = cal.monthdayscalendar(current_year, current_month)
+        
+        # Display the current month
+        month_name = calendar.month_name[current_month]
+        month_text = font.render(month_name, True, BLACK)
+        month_text_width = month_text.get_width()
+        month_text_x = (WINDOW_WIDTH - month_text_width) // 2
+        window.blit(month_text, (month_text_x, grid_y - FONT_SIZE - 5))
 
         # Display the days of the week
         days_of_week = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
