@@ -153,7 +153,7 @@ try:
         days_of_week = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
         for i, day in enumerate(days_of_week):
             text_surface = font.render(day, True, BLACK)
-            window.blit(text_surface, (i * cell_width, grid_y - FONT_SIZE - 5))
+            window.blit(text_surface, (i * cell_width, grid_y - FONT_SIZE + 10))
 
         # Display the calendar days
         for i, week in enumerate(cal_data):
