@@ -10,64 +10,65 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 BLUE = (0, 191, 255)
 GREY = (220, 220, 220)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
 background_color = WHITE
 
 screen = pygame.display.set_mode((0, 0), FULLSCREEN)
 
-
 #Whiteboard Section
 
-def handle_mouse_button(pos, button_states, username):
-    button_states["black"] = button_states["black_button_rect"].collidepoint(pos)
-    button_states["blue"] = button_states["blue_button_rect"].collidepoint(pos)
-    button_states["eraser"] = button_states["eraser_button_rect"].collidepoint(pos)
-    button_states["clear"] = button_states["clear_button_rect"].collidepoint(pos)
-    button_states["slider"] = button_states["slider_width_rect"].collidepoint(pos)
-    button_states["color_picker"] = button_states["color_picker_rect"].collidepoint(pos)
-    button_states["save"] = button_states["save_button_rect"].collidepoint(pos)
-    button_states["load"] = button_states["load_button_rect"].collidepoint(pos)
-    button_states["back"] = button_states["back_button_rect"].collidepoint(pos)
+def mouse_button_action(pos, button_choice, username):
+    button_choice["black"] = button_choice["black_button_rect"].collidepoint(pos)
+    button_choice["blue"] = button_choice["blue_button_rect"].collidepoint(pos)
+    button_choice["eraser"] = button_choice["eraser_button_rect"].collidepoint(pos)
+    button_choice["clear"] = button_choice["clear_button_rect"].collidepoint(pos)
+    button_choice["slider"] = button_choice["slider_width_rect"].collidepoint(pos)
+    button_choice["rgb_picker"] = button_choice["rgb_picker_rect"].collidepoint(pos)
+    button_choice["save"] = button_choice["save_button_rect"].collidepoint(pos)
+    button_choice["load"] = button_choice["load_button_rect"].collidepoint(pos)
+    button_choice["back"] = button_choice["back_button_rect"].collidepoint(pos)
 
-    if button_states["whiteboard_rect"].collidepoint(pos):
-        start_drawing(pos, button_states)
+    if button_choice["whiteboard_rect"].collidepoint(pos):
+        drawing(pos, button_choice)
 
-    if button_states["black"]:
-        button_states["color"] = BLACK
-    elif button_states["blue"]:
-        button_states["color"] = BLUE
-    elif button_states["eraser"]:
-        button_states["color"] = background_color
-    elif button_states["clear"]:
-        clear_whiteboard(button_states["whiteboard"])
-    elif button_states["save"]:
-        save_whiteboard(button_states["whiteboard"], username)
-    elif button_states["load"]:
-        load_whiteboard(button_states, username)
-    elif button_states["back"]:
+    if button_choice["black"]:
+        button_choice["color"] = BLACK
+    elif button_choice["blue"]:
+        button_choice["color"] = BLUE
+    elif button_choice["eraser"]:
+        button_choice["color"] = background_color
+    elif button_choice["clear"]:
+        clear_whiteboard(button_choice["whiteboard"])
+    elif button_choice["save"]:
+        save_whiteboard(button_choice["whiteboard"], username)
+    elif button_choice["load"]:
+        load_whiteboard(button_choice, username)
+    elif button_choice["back"]:
         back_button_action(username)
 
-    if button_states["color_picker"]:
-        button_states["color"] = choose_color()
+    if button_choice["rgb_picker"]:
+        button_choice["color"] = choose_color()
 
 def back_button_action(username):
     menu_buttons(username)
     # Add your code here to handle the action when the "Back" button is clicked
 
-def start_drawing(pos, button_states):
-    button_states["drawing"] = True
-    button_states["last_pos"] = pos
+def drawing(pos, button_choice):
+    button_choice["drawing"] = True
+    button_choice["last_pos"] = pos
 
-def handle_mouse_motion(pos, button_states):
-    if button_states["dragging"]:
-        update_slider_width(pos, button_states)
+def slider_motion(pos, button_choice):
+    if button_choice["drag_slider"]:
+        update_slider_width(pos, button_choice)
 
-    if button_states["drawing"]:
-        draw(pos, button_states)
+    if button_choice["drawing"]:
+        draw(pos, button_choice)
 
-def draw(pos, button_states):
-    if button_states["drawing"]:
-        color = button_states["color"]
-        last_pos = button_states["last_pos"]
+def draw(pos, button_choice):
+    if button_choice["drawing"]:
+        color = button_choice["color"]
+        last_pos = button_choice["last_pos"]
         distance_x = pos[0] - last_pos[0]
         distance_y = pos[1] - last_pos[1]
         distance = max(abs(distance_x), abs(distance_y))
@@ -77,53 +78,59 @@ def draw(pos, button_states):
         for i in range(distance):
             x = int(last_pos[0] + i * step_x)
             y = int(last_pos[1] + i * step_y)
-            pygame.draw.circle(button_states["whiteboard"], color, (x, y), button_states["slider_width"] // 2)
+            pygame.draw.circle(button_choice["whiteboard"], color, (x, y), button_choice["slider_width"] // 2)
 
-        button_states["last_pos"] = pos
+        button_choice["last_pos"] = pos
 
 def clear_whiteboard(whiteboard):
     whiteboard.fill(background_color)
 
-def update_slider_width(pos, button_states):
-    if button_states["dragging"]:
-        if button_states["slider_width_rect"].left <= pos[0] <= button_states["slider_width_rect"].right:
+def update_slider_width(pos, button_choice):
+    if button_choice["drag_slider"]:
+        if button_choice["slider_width_rect"].left <= pos[0] <= button_choice["slider_width_rect"].right:
             # Calculate the new slider width based on the mouse position
-            slider_width = int((pos[0] - button_states["slider_width_rect"].left) / button_states["slider_width_rect"].width * 19) + 1
+            slider_width = int((pos[0] - button_choice["slider_width_rect"].left) / button_choice["slider_width_rect"].width * 19) + 1
             # Limit the slider width to a minimum value of 1
             slider_width = max(slider_width, 5)
             # Limit the slider width to a maximum value of 20 (optional)
             slider_width = min(slider_width, 20)
 
             # Update the slider width and position
-            button_states["slider_width"] = slider_width
-            slider_pos = (button_states["slider_width_rect"].left + int((button_states["slider_width"] - 1) / 19 * button_states["slider_width_rect"].width),
-                        button_states["slider_width_rect"].centery)
-            button_states["slider_pos"] = slider_pos
+            button_choice["slider_width"] = slider_width
+            slider_pos = (button_choice["slider_width_rect"].left + int((button_choice["slider_width"] - 1) / 19 * button_choice["slider_width_rect"].width),
+                        button_choice["slider_width_rect"].centery)
+            button_choice["slider_pos"] = slider_pos
 
             # Perform any additional actions based on the updated slider width
 
 def save_whiteboard(whiteboard, username):
     folder_path = os.path.join("user_data", username)  # Create a folder path based on the username
     os.makedirs(folder_path, exist_ok=True)  # Create the folder if it doesn't exist
-    filename = os.path.join(folder_path, f"{username}_whiteboard.png")  # Use the folder path to create the filename
-    pygame.image.save(whiteboard, filename)
+    file_name = os.path.join(folder_path, f"{username}_whiteboard.png")  # Use the folder path to create the file_name
+    pygame.image.save(whiteboard, file_name)
+    confirm_save_font = pygame.font.Font(None, 36)
+    confirm_save_text = confirm_save_font.render("Whiteboard saved", True, GREEN)
+    confirm_save_text_rect = confirm_save_text.get_rect(center=screen.get_rect().center)
+    screen.blit(confirm_save_text, confirm_save_text_rect)
+    pygame.display.flip()
+    pygame.time.wait(1 * 1000)
 
-def load_whiteboard(button_states, username):
+def load_whiteboard(button_choice, username):
     folder_path = os.path.join("user_data", username)  # Create a folder path based on the username
-    filename = os.path.join(folder_path, f"{username}_whiteboard.png")  # Use the folder path to create the filename
+    file_name = os.path.join(folder_path, f"{username}_whiteboard.png")  # Use the folder path to create the file_name
     try:
-        if os.path.exists(filename):
-            button_states["whiteboard"] = pygame.image.load(filename).convert()
+        if os.path.exists(file_name):
+            button_choice["whiteboard"] = pygame.image.load(file_name).convert()
         else:
-            font = pygame.font.Font(None, 36)
-            load_error_text = font.render("Image not found", True, (255, 0, 0))
+            load_error_font = pygame.font.Font(None, 36)
+            load_error_text = load_error_font.render("Whiteboard not found", True, RED)
             load_error_text_rect = load_error_text.get_rect(center=screen.get_rect().center)
             screen.blit(load_error_text, load_error_text_rect)
             pygame.display.flip()
             pygame.time.wait(1 * 1000)
 
     except pygame.error:
-        print(f"Could not load whiteboard from {filename}")
+        print(f"Could not load whiteboard from {file_name}")
 
 def choose_color():
     root = tk.Tk()
@@ -140,12 +147,12 @@ def run(username):
     whiteboard.fill(background_color)
 
     # Button properties
-    button_states = {
+    button_choice = {
         "whiteboard": whiteboard,
         "whiteboard_rect": pygame.Rect(0, 0, info.current_w, info.current_h),
         "black_button_rect": pygame.Rect(10, 10, 100, 50),
         "blue_button_rect": pygame.Rect(120, 10, 100, 50),
-        "color_picker_rect": pygame.Rect(230, 10, 100, 50),  # Added color_picker_rect
+        "rgb_picker_rect": pygame.Rect(230, 10, 100, 50),  # Added rgb_picker_rect
         "color_choice_rect": pygame.Rect(340, 10, 100, 50),
         "eraser_button_rect": pygame.Rect(450, 10, 100, 50),
         "clear_button_rect": pygame.Rect(560, 10, 100, 50),
@@ -157,13 +164,13 @@ def run(username):
         "last_pos": None,
         "color": BLACK,
         "slider_width": 5,
-        "dragging": False,
+        "drag_slider": False,
         "black": False,
         "blue": False,
         "eraser": False,
         "clear": False,
         "slider": False,
-        "color_picker": False,
+        "rgb_picker": False,
         "back": False
     }
 
@@ -173,52 +180,52 @@ def run(username):
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                handle_mouse_button(event.pos, button_states, username)  # Pass the username here
-                if event.button == 1 and button_states["slider"]:
-                    button_states["dragging"] = True
-                elif event.button == 1 and button_states["color_picker"]:
-                    button_states["color"] = choose_color()
+                mouse_button_action(event.pos, button_choice, username)  # Pass the username here
+                if event.button == 1 and button_choice["slider"]:
+                    button_choice["drag_slider"] = True
+                elif event.button == 1 and button_choice["rgb_picker"]:
+                    button_choice["color"] = choose_color()
             elif event.type == pygame.MOUSEMOTION:
-                handle_mouse_motion(event.pos, button_states)
+                slider_motion(event.pos, button_choice)
             elif event.type == pygame.MOUSEBUTTONUP:
-                button_states["drawing"] = False
-                button_states["dragging"] = False
+                button_choice["drawing"] = False
+                button_choice["drag_slider"] = False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 running = False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_BACKSPACE:
                 back_button_action(username)  # Trigger back button action on Backspace key press
 
-        screen.blit(button_states["whiteboard"], (0, 0))
+        screen.blit(button_choice["whiteboard"], (0, 0))
         
         
 
         # Draw the buttons
-        pygame.draw.rect(screen, BLACK, button_states["black_button_rect"])
-        pygame.draw.rect(screen, BLUE, button_states["blue_button_rect"])
-        pygame.draw.rect(screen, BLACK, button_states["color_picker_rect"])
-        pygame.draw.rect(screen, BLACK, button_states["eraser_button_rect"])
-        pygame.draw.rect(screen, BLACK, button_states["clear_button_rect"])
-        pygame.draw.rect(screen, BLACK, button_states["save_button_rect"])
-        pygame.draw.rect(screen, BLACK, button_states["load_button_rect"])
-        pygame.draw.rect(screen, button_states["color"], button_states["color_choice_rect"])
-        pygame.draw.rect(screen, BLACK, button_states["back_button_rect"])
+        pygame.draw.rect(screen, BLACK, button_choice["black_button_rect"])
+        pygame.draw.rect(screen, BLUE, button_choice["blue_button_rect"])
+        pygame.draw.rect(screen, BLACK, button_choice["rgb_picker_rect"])
+        pygame.draw.rect(screen, BLACK, button_choice["eraser_button_rect"])
+        pygame.draw.rect(screen, BLACK, button_choice["clear_button_rect"])
+        pygame.draw.rect(screen, BLACK, button_choice["save_button_rect"])
+        pygame.draw.rect(screen, BLACK, button_choice["load_button_rect"])
+        pygame.draw.rect(screen, button_choice["color"], button_choice["color_choice_rect"])
+        pygame.draw.rect(screen, BLACK, button_choice["back_button_rect"])
 
         # Draw the button labels
         button_font = pygame.font.SysFont("Arial", 20)
-        screen.blit(button_font.render("Black", True, WHITE), (button_states["black_button_rect"].x + 10, button_states["black_button_rect"].y + 10))
-        screen.blit(button_font.render("Blue", True, WHITE), (button_states["blue_button_rect"].x + 20, button_states["blue_button_rect"].y + 10))
-        screen.blit(button_font.render("Eraser", True, WHITE), (button_states["eraser_button_rect"].x + 10, button_states["eraser_button_rect"].y + 10))
-        screen.blit(button_font.render("Clear", True, WHITE), (button_states["clear_button_rect"].x + 20, button_states["clear_button_rect"].y + 10))
-        screen.blit(button_font.render("Save", True, WHITE), (button_states["save_button_rect"].x + 25, button_states["save_button_rect"].y + 10))
-        screen.blit(button_font.render("Load", True, WHITE), (button_states["load_button_rect"].x + 25, button_states["load_button_rect"].y + 10))
-        screen.blit(button_font.render("Back", True, WHITE), (button_states["back_button_rect"].x + 25, button_states["back_button_rect"].y + 10))
-        screen.blit(button_font.render("RGB", True, WHITE), (button_states["color_picker_rect"].x + 30, button_states["color_picker_rect"].y + 5))
-        screen.blit(button_font.render("Selector", True, WHITE), (button_states["color_picker_rect"].x + 20, button_states["color_picker_rect"].y + 25))
+        screen.blit(button_font.render("Black", True, WHITE), (button_choice["black_button_rect"].x + 10, button_choice["black_button_rect"].y + 10))
+        screen.blit(button_font.render("Blue", True, WHITE), (button_choice["blue_button_rect"].x + 20, button_choice["blue_button_rect"].y + 10))
+        screen.blit(button_font.render("Eraser", True, WHITE), (button_choice["eraser_button_rect"].x + 10, button_choice["eraser_button_rect"].y + 10))
+        screen.blit(button_font.render("Clear", True, WHITE), (button_choice["clear_button_rect"].x + 20, button_choice["clear_button_rect"].y + 10))
+        screen.blit(button_font.render("Save", True, WHITE), (button_choice["save_button_rect"].x + 25, button_choice["save_button_rect"].y + 10))
+        screen.blit(button_font.render("Load", True, WHITE), (button_choice["load_button_rect"].x + 25, button_choice["load_button_rect"].y + 10))
+        screen.blit(button_font.render("Back", True, WHITE), (button_choice["back_button_rect"].x + 25, button_choice["back_button_rect"].y + 10))
+        screen.blit(button_font.render("RGB", True, WHITE), (button_choice["rgb_picker_rect"].x + 30, button_choice["rgb_picker_rect"].y + 5))
+        screen.blit(button_font.render("Selector", True, WHITE), (button_choice["rgb_picker_rect"].x + 20, button_choice["rgb_picker_rect"].y + 25))
 
         # Draw the slider
-        pygame.draw.rect(screen, GREY, button_states["slider_width_rect"])
-        pygame.draw.rect(screen, BLACK, button_states["slider_width_rect"], 2)
-        slider_pos = (button_states["slider_width_rect"].left + int((button_states["slider_width"] - 1) / 19 * button_states["slider_width_rect"].width), button_states["slider_width_rect"].centery)
+        pygame.draw.rect(screen, GREY, button_choice["slider_width_rect"])
+        pygame.draw.rect(screen, BLACK, button_choice["slider_width_rect"], 2)
+        slider_pos = (button_choice["slider_width_rect"].left + int((button_choice["slider_width"] - 1) / 19 * button_choice["slider_width_rect"].width), button_choice["slider_width_rect"].centery)
         pygame.draw.circle(screen, BLACK, slider_pos, 10)
 
         pygame.display.flip()
@@ -247,7 +254,6 @@ def menu_button_action(label, username):
 
 def menu_buttons(username):
     pygame.init()
-    #screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     clock = pygame.time.Clock()
 
     button_labels = ["Whiteboard", "Kanban Board", "Calendar", "Timer", "Exit"]
@@ -276,6 +282,7 @@ def menu_buttons(username):
                         )
                         if button_rect.collidepoint(mouse_pos):
                             menu_button_action(label, username)
+                        
 
         screen.fill((255, 255, 255))
 
@@ -289,7 +296,7 @@ def menu_buttons(username):
             )
 
             pygame.draw.rect(screen, button_color, button_rect)
-            pygame.draw.rect(screen, (0, 0, 0), button_rect, 3)
+            pygame.draw.rect(screen, WHITE, button_rect, 3)
 
             button_text = button_font.render(label, True, button_text_color)
             text_rect = button_text.get_rect(center=button_rect.center)
@@ -304,8 +311,6 @@ def login():
     pygame.init()
 
     # Set up the screen
-    #screen = pygame.display.set_mode((0, 0), FULLSCREEN)
-    pygame.display.set_caption("Log into KanBoard.5")
     screen_width, screen_height = pygame.display.get_surface().get_size()
 
     clock = pygame.time.Clock()
@@ -332,8 +337,7 @@ def login():
     # Invalid Login message variables
     invalid_login_text = ""
     invalid_login_font = pygame.font.Font(None, 24)
-    invalid_login_color = (255, 0, 0)
-    invalid_login_rect = pygame.Rect(screen_width // 2 - 100, password_y + 120, 200, 30)
+    invalid_login_rect = pygame.Rect(screen_width // 2 - 100, password_y + 170, 200, 30)
 
     while running:
         for event in pygame.event.get():
@@ -362,12 +366,14 @@ def login():
                     password_outline_color = GREY
                 elif button_login.collidepoint(mouse_pos):
                     folder = os.getcwd()
-                    fileName = folder + "\\accounts.csv"
-                    with open(fileName, "r") as csvFile:
-                        reader = csv.reader(csvFile, delimiter=',')
+                    file_name = folder + "\\accounts.csv"
+                    with open(file_name, "r") as csv_file:
+                        reader = csv.reader(csv_file, delimiter=',')
                         login_validity = False 
                         for line in reader:
-                            if username == line[0] and password == line[1]:
+                            if username == "" or password == "":
+                                invalid_login_text = "Invalid Login"
+                            elif username == line[0] and password == line[1]:
                                 print("Credentials Matched")
                                 login_validity = True
                                 invalid_login_text = ""
@@ -375,9 +381,10 @@ def login():
                                 if not os.path.exists(user_folder):
                                     os.makedirs(user_folder)
                                 menu_buttons(username)
-    
                             if not login_validity:
                                 invalid_login_text = "Invalid Login"
+                elif button_signup.collidepoint(mouse_pos):
+                    signup()
 
         # Clear the screen
         screen.fill(WHITE)
@@ -430,7 +437,7 @@ def login():
         screen.blit(button_text_rendered, button_text_rect)
 
         # Draw invalid login message
-        invalid_login_rendered = invalid_login_font.render(invalid_login_text, True, invalid_login_color)
+        invalid_login_rendered = invalid_login_font.render(invalid_login_text, True, RED)
         screen.blit(invalid_login_rendered, invalid_login_rect)
         
         pygame.display.flip()
@@ -440,34 +447,31 @@ def signup():
     pygame.init()
 
     # Set up the screen
-    #screen = pygame.display.set_mode((0, 0), FULLSCREEN)
-    pygame.display.set_caption("Sign up for KanBoard.5")
     screen_width, screen_height = pygame.display.get_surface().get_size()
 
     clock = pygame.time.Clock()
     running = True
 
     # Text input variables
-    username = ""
-    password = ""
-    active_field = "username"  # To keep track of the active text input field
-    username_outline_color = BLACK  # Outline color for username input box
-    password_outline_color = BLACK
+    new_username = ""
+    new_password = ""
+    signup_active_field = "new_username"  # To keep track of the active text input field
+    new_username_outline_color = BLACK  # Outline color for username input box
+    new_password_outline_color = BLACK
 
     # Calculate vertical positions for username and password
-    username_y = screen_height // 2 - 50
-    password_y = username_y + 100
+    new_username_y = screen_height // 2 - 50
+    new_password_y = new_username_y + 100
 
     # Button variables
-    button_signup = pygame.Rect(screen_width // 2 - 50, password_y + 80, 100, 30)
-    button_color = BLACK
-    button_text = "Sign Up"
+    button_signup = pygame.Rect(screen_width // 2 - 50, new_password_y + 80, 100, 30)
+    signup_button_color = BLACK
+    signup_button_text = "Sign Up"
 
     # Invalid Login message variables
-    invalid_login_text = ""
-    invalid_login_font = pygame.font.Font(None, 24)
-    invalid_login_color = (255, 0, 0)
-    invalid_login_rect = pygame.Rect(screen_width // 2 - 100, password_y + 120, 200, 30)
+    invalid_signup_text = ""
+    invalid_signup_font = pygame.font.Font(None, 24)
+    invalid_signup_rect = pygame.Rect(screen_width // 2 - 100, new_password_y + 120, 200, 30)
 
     while running:
         for event in pygame.event.get():
@@ -475,90 +479,91 @@ def signup():
                 running = False
             elif event.type == KEYDOWN:
                 if event.key == K_BACKSPACE:
-                    if active_field == "username":
-                        username = username[:-1]
-                    elif active_field == "password":
-                        password = password[:-1]
+                    if signup_active_field == "new_username":
+                        new_username = new_username[:-1]
+                    elif signup_active_field == "new_password":
+                        new_password = new_password[:-1]
                 else:
-                    if active_field == "username":
-                        username += event.unicode
-                    elif active_field == "password":
-                        password += event.unicode
+                    if signup_active_field == "new_username":
+                        new_username += event.unicode
+                    elif signup_active_field == "new_password":
+                        new_password += event.unicode
             elif event.type == MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
-                if username_rect.collidepoint(mouse_pos):
-                    active_field = "username"
-                    username_outline_color = GREY
-                    password_outline_color = BLACK
-                elif password_rect.collidepoint(mouse_pos):
-                    active_field = "password"
-                    username_outline_color = BLACK
-                    password_outline_color = GREY
+                if signup_username_rect.collidepoint(mouse_pos):
+                    signup_active_field = "new_username"
+                    new_username_outline_color = GREY
+                    new_password_outline_color = BLACK
+                elif signup_password_rect.collidepoint(mouse_pos):
+                    signup_active_field = "new_password"
+                    new_username_outline_color = BLACK
+                    new_password_outline_color = GREY
                 elif button_signup.collidepoint(mouse_pos):
                     folder = os.getcwd()
-                    fileName = folder + "\\accounts.csv"
-                    with open(fileName, "r") as csvFile:
-                        reader = csv.reader(csvFile, delimiter=',')
-                        login_validity = False 
-                        for line in reader:
-                            if username == line[0] and password == line[1]:
-                                print("Credentials Matched")
-                                login_validity = True
-                                invalid_login_text = ""
-                                user_folder = os.path.join("user_data", username)
-                                if not os.path.exists(user_folder):
-                                    os.makedirs(user_folder)
-                                menu_buttons(username)
-    
-                            if not login_validity:
-                                invalid_login_text = "Invalid Login"
-
-        # Clear the screen
+                    file_name = folder + "\\accounts.csv"
+                    username_exists = False  # Flag to track username existence
+                    with open(file_name, "r") as csv_file:
+                        reader = csv.reader(csv_file)
+                        for row in reader:
+                            if new_username == "" or new_password == "":
+                                invalid_signup_text = "Invalid username or password"
+                                break  # Exit the loop if username is invalid
+                            elif new_username in row:
+                                invalid_signup_text = "Username already taken"
+                                break  # Exit the loop if username is taken
+                        else:
+                            # Append the new username and password on a new row
+                            with open(file_name, "a", newline="") as csv_file:
+                                writer = csv.writer(csv_file)
+                                csv_file.write('\n')
+                                writer.writerow([new_username, new_password])
+                            login()
+            # Clear the screen
         screen.fill(WHITE)
 
         # Draw title
         font = pygame.font.Font(None, 48)
-        title_text = font.render("Log into KanBoard.5", True, BLACK)
-        title_text_rect = title_text.get_rect(center=(screen_width // 2, 350))
-        screen.blit(title_text, title_text_rect)
+        signup_title_text = font.render("Sign up for KanBoard.5", True, BLACK)
+        signup_title_text_rect = signup_title_text.get_rect(center=(screen_width // 2, 350))
+        screen.blit(signup_title_text, signup_title_text_rect)
 
         # Draw username label and input box
-        font = pygame.font.Font(None, 36)
-        username_label = font.render("Username:", True, BLACK)
-        username_label_rect = username_label.get_rect(center=(screen_width // 2, username_y))
-        screen.blit(username_label, username_label_rect)
+        signup_font = pygame.font.Font(None, 30)
+        signup_username_label = signup_font.render("New Username:", True, BLACK)
+        signup_username_label_rect = signup_username_label.get_rect(center=(screen_width // 2, new_username_y))
+        screen.blit(signup_username_label, signup_username_label_rect)
 
-        username_rect = pygame.Rect(screen_width // 2 - 100, username_y + 30, 200, 30)
-        pygame.draw.rect(screen, WHITE, username_rect)
-        pygame.draw.rect(screen, username_outline_color, username_rect, 2)  # Use username_outline_color for the outline
+        signup_username_rect = pygame.Rect(screen_width // 2 - 100, new_username_y + 30, 200, 30)
+        pygame.draw.rect(screen, WHITE, signup_username_rect)
+        pygame.draw.rect(screen, new_username_outline_color, signup_username_rect, 2)  # Use username_outline_color for the outline
 
-        username_text = font.render(username, True, BLACK)
-        username_text_rect = username_text.get_rect(center=username_rect.center)
-        screen.blit(username_text, username_text_rect)
+        signup_username_text = signup_font.render(new_username, True, BLACK)
+        signup_username_text_rect = signup_username_text.get_rect(center=signup_username_rect.center)
+        screen.blit(signup_username_text, signup_username_text_rect)
 
         # Draw password label and input box
-        password_label = font.render("Password:", True, BLACK)
-        password_label_rect = password_label.get_rect(center=(screen_width // 2, password_y))
-        screen.blit(password_label, password_label_rect)
+        signup_password_label = signup_font.render("New Password:", True, BLACK)
+        signup_password_label_rect = signup_password_label.get_rect(center=(screen_width // 2, new_password_y))
+        screen.blit(signup_password_label, signup_password_label_rect)
 
-        password_rect = pygame.Rect(screen_width // 2 - 100, password_y + 30, 200, 30)
-        pygame.draw.rect(screen, WHITE, password_rect)
-        pygame.draw.rect(screen, password_outline_color, password_rect, 2)
+        signup_password_rect = pygame.Rect(screen_width // 2 - 100, new_password_y + 30, 200, 30)
+        pygame.draw.rect(screen, WHITE, signup_password_rect)
+        pygame.draw.rect(screen, new_password_outline_color, signup_password_rect, 2)
 
-        password_text = font.render("*" * len(password), True, BLACK)
-        password_text_rect = password_text.get_rect(center=password_rect.center)
-        screen.blit(password_text, password_text_rect)
+        signup_password_text = signup_font.render("*" * len(new_password), True, BLACK)
+        signup_password_text_rect = signup_password_text.get_rect(center=signup_password_rect.center)
+        screen.blit(signup_password_text, signup_password_text_rect)
 
         # Draw sign up button
-        pygame.draw.rect(screen, button_color, button_signup)
-        button_font = pygame.font.Font(None, 24)
-        button_text_rendered = button_font.render(button_text, True, WHITE)
-        button_text_rect = button_text_rendered.get_rect(center=button_signup.center)
-        screen.blit(button_text_rendered, button_text_rect)
+        pygame.draw.rect(screen, signup_button_color, button_signup)
+        signup_button_font = pygame.font.Font(None, 24)
+        signup_button_text_rendered = signup_button_font.render(signup_button_text, True, WHITE)
+        signup_button_text_rect = signup_button_text_rendered.get_rect(center=button_signup.center)
+        screen.blit(signup_button_text_rendered, signup_button_text_rect)
 
         # Draw invalid login message
-        invalid_login_rendered = invalid_login_font.render(invalid_login_text, True, invalid_login_color)
-        screen.blit(invalid_login_rendered, invalid_login_rect)
+        invalid_signup_rendered = invalid_signup_font.render(invalid_signup_text, True, RED)
+        screen.blit(invalid_signup_rendered, invalid_signup_rect)
         
         pygame.display.flip()
         clock.tick(60)
