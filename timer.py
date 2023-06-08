@@ -4,16 +4,17 @@ from tkinter import messagebox
 
 def run_timer():
     def submit():
-        nonlocal paused
+        nonlocal paused, initial_time
         if paused:
             paused = False
         else:
             try:
-                temp = int(hour.get()) * 3600 + int(minute.get()) * 60 + int(second.get())
+                initial_time = int(hour.get()) * 3600 + int(minute.get()) * 60 + int(second.get())
             except ValueError:
                 messagebox.showerror("Error", "Please input the right value")
                 return
 
+            temp = initial_time
             while temp > -1 and not paused:
                 mins, secs = divmod(temp, 60)
                 hours = 0
@@ -38,13 +39,16 @@ def run_timer():
         paused = not paused
 
     def reset():
-        hour.set("00")
-        minute.set("00")
-        second.set("00")
+        nonlocal paused, initial_time
+        hour.set("{0:02d}".format(initial_time // 3600))
+        minute.set("{0:02d}".format((initial_time // 60) % 60))
+        second.set("{0:02d}".format(initial_time % 60))
+        paused = False
 
     root = Tk()
     root.geometry("300x250")
     root.title("Time Counter")
+    root.configure(bg="black")
 
     hour = StringVar()
     minute = StringVar()
@@ -73,6 +77,7 @@ def run_timer():
     reset_btn.place(x=130, y=160)
 
     paused = False
+    initial_time = 0
 
     root.mainloop()
 
