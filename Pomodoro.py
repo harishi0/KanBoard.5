@@ -20,7 +20,7 @@ def run_pomodoro_timer():
 
     START_STOP_BUTTON = Button(WHITE_BUTTON, (WIDTH/2, HEIGHT/2+100), 170, 60, "START", 
                         pygame.font.Font("assets/ArialRoundedMTBold.ttf", 20), "#c97676", "#9ab034")
-    POMODORO_BUTTON = Button(None, (WIDTH/2-150, HEIGHT/2-140), 120, 30, "Pomodoro", 
+    POMODORO_BUTTON = Button(None, (WIDTH/2-150, HEIGHT/2-140), 120, 30, "Work Session", 
                         pygame.font.Font("assets/ArialRoundedMTBold.ttf", 20), "#FFFFFF", "#9ab034")
     SHORT_BREAK_BUTTON = Button(None, (WIDTH/2, HEIGHT/2-140), 120, 30, "Short Break", 
                         pygame.font.Font("assets/ArialRoundedMTBold.ttf", 20), "#FFFFFF", "#9ab034")
@@ -56,7 +56,7 @@ def run_pomodoro_timer():
                     current_seconds = LONG_BREAK_LENGTH
                     started = False
                 if started:
-                    START_STOP_BUTTON.text_input = "STOP"
+                    START_STOP_BUTTON.text_input = "PAUSE"
                     START_STOP_BUTTON.text = pygame.font.Font("assets/ArialRoundedMTBold.ttf", 20).render(
                                             START_STOP_BUTTON.text_input, True, START_STOP_BUTTON.base_color)
                 else:
