@@ -14,6 +14,8 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 background_color = WHITE
 
+max_length_login_signup = 12
+
 screen = pygame.display.set_mode((0, 0), FULLSCREEN)
 
 #Whiteboard Section
@@ -111,7 +113,7 @@ def save_whiteboard(whiteboard, username):
     confirm_save_font = pygame.font.Font(None, 36)
     confirm_save_text = confirm_save_font.render("Whiteboard saved", True, GREEN)
     confirm_save_text_rect = confirm_save_text.get_rect(center=screen.get_rect().center)
-    screen.blit(confirm_save_text, confirm_save_text_rect)
+    screen.blit(confirm_save_text, confirm_save_text_rect, screen.fill(WHITE))
     pygame.display.flip()
     pygame.time.wait(1 * 1000)
 
@@ -124,14 +126,14 @@ def load_whiteboard(button_choice, username):
             confirm_load_font = pygame.font.Font(None, 36)
             confirm_load_text = confirm_load_font.render("Whiteboard loaded", True, GREEN)
             confirm_load_text_rect = confirm_load_text.get_rect(center=screen.get_rect().center)
-            screen.blit(confirm_load_text, confirm_load_text_rect)
+            screen.blit(confirm_load_text, confirm_load_text_rect, screen.fill(WHITE))
             pygame.display.flip()
             pygame.time.wait(1 * 1000)
         else:
             load_error_font = pygame.font.Font(None, 36)
             load_error_text = load_error_font.render("Whiteboard not found", True, RED)
             load_error_text_rect = load_error_text.get_rect(center=screen.get_rect().center)
-            screen.blit(load_error_text, load_error_text_rect)
+            screen.blit(load_error_text, load_error_text_rect, screen.fill(WHITE))
             pygame.display.flip()
             pygame.time.wait(1 * 1000)
 
@@ -141,13 +143,17 @@ def load_whiteboard(button_choice, username):
 def choose_color():
     root = tk.Tk()
     root.withdraw()
-    color = colorchooser.askcolor()[0]
-    return tuple(int(c) for c in color)
+    color = colorchooser.askcolor()
+    if color[0] is not None:
+        return tuple(int(c) for c in color[0])
+    else:
+        # Handle the case where no color was selected
+        # You can choose to return a default color or handle it differently
+        return BLACK  # Returning black color as an example
 
 def run(username):
     pygame.init()
     info = pygame.display.Info()
-    #screen = pygame.display.set_mode((info.current_w, info.current_h), pygame.RESIZABLE)
     clock = pygame.time.Clock()
     whiteboard = pygame.Surface((info.current_w, info.current_h))
     whiteboard.fill(background_color)
@@ -166,6 +172,7 @@ def run(username):
         "load_button_rect": pygame.Rect(780, 10, 100, 50),        
         "slider_width_rect": pygame.Rect(890, 10, 200, 20),
         "back_button_rect": pygame.Rect((info.current_w - 100) // 2, info.current_h - 60, 100, 50),
+        "whiteboard_menu_border": pygame.Rect(0, 100, 1000, 5),
         "drawing": False,
         "last_pos": None,
         "color": BLACK,
@@ -213,6 +220,7 @@ def run(username):
         pygame.draw.rect(screen, BLACK, button_choice["load_button_rect"])
         pygame.draw.rect(screen, button_choice["color"], button_choice["color_choice_rect"])
         pygame.draw.rect(screen, BLACK, button_choice["back_button_rect"])
+        pygame.draw.rect(screen, BLACK, button_choice["whiteboard_menu_border"])
 
         # Draw the button labels
         button_font = pygame.font.SysFont("Arial", 20)
@@ -324,8 +332,8 @@ def login():
     login_username = ""
     login_password = ""
     active_field = "login_username"  # To keep track of the active text input field
-    login_username_outline_color = BLACK  # Outline color for username input box
-    login_password_outline_color = BLACK
+    login_username_outline_color = GREY  # Outline color for username input box
+    login_password_outline_color = GREY
 
     # Calculate vertical positions for username and password
     login_username_y = screen_height // 2 - 50
@@ -345,6 +353,7 @@ def login():
     invalid_login_font = pygame.font.Font(None, 24)
     invalid_login_rect = pygame.Rect(screen_width // 2 - 100, login_password_y + 200, 200, 30)
 
+    
     while running:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -377,19 +386,21 @@ def login():
                                 invalid_login_text = "Invalid Login"
                 else:
                     if active_field == "login_username":
-                        login_username += event.unicode
+                        if len(login_username) < max_length_login_signup:
+                            login_username += event.unicode[:max_length_login_signup - len(login_username)]
                     elif active_field == "login_password":
-                        login_password += event.unicode
+                        if len(login_password) < max_length_login_signup:
+                            login_password += event.unicode[:max_length_login_signup - len(login_password)]
             elif event.type == MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 if login_username_rect.collidepoint(mouse_pos):
                     active_field = "login_username"
-                    login_username_outline_color = GREY
-                    login_password_outline_color = BLACK
-                elif login_password_rect.collidepoint(mouse_pos):
-                    active_field = "login_password"
                     login_username_outline_color = BLACK
                     login_password_outline_color = GREY
+                elif login_password_rect.collidepoint(mouse_pos):
+                    active_field = "login_password"
+                    login_username_outline_color = GREY
+                    login_password_outline_color = BLACK
                 elif login_button.collidepoint(mouse_pos):
                     folder = os.getcwd()
                     file_name = folder + "\\accounts.csv"
@@ -491,8 +502,8 @@ def signup():
     signup_username = ""
     signup_password = ""
     signup_active_field = "signup_username"  # To keep track of the active text input field
-    signup_username_outline_color = BLACK  # Outline color for username input box
-    signup_password_outline_color = BLACK
+    signup_username_outline_color = GREY  # Outline color for username input box
+    signup_password_outline_color = GREY
 
     # Calculate vertical positions for username and password
     signup_username_y = screen_height // 2 - 50
@@ -544,19 +555,21 @@ def signup():
                                 invalid_signup_text = "Invalid username or password"
                 else:
                     if signup_active_field == "signup_username":
-                        signup_username += event.unicode
+                        if len(signup_username) < max_length_login_signup:
+                                signup_username += event.unicode[:max_length_login_signup- len(signup_username)]
                     elif signup_active_field == "signup_password":
-                        signup_password += event.unicode
+                        if len(signup_password) < max_length_login_signup:
+                            signup_password += event.unicode[:max_length_login_signup - len(signup_password)]
             elif event.type == MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 if signup_username_rect.collidepoint(mouse_pos):
                     signup_active_field = "signup_username"
-                    signup_username_outline_color = GREY
-                    signup_password_outline_color = BLACK
-                elif signup_password_rect.collidepoint(mouse_pos):
-                    signup_active_field = "signup_password"
                     signup_username_outline_color = BLACK
                     signup_password_outline_color = GREY
+                elif signup_password_rect.collidepoint(mouse_pos):
+                    signup_active_field = "signup_password"
+                    signup_username_outline_color = GREY
+                    signup_password_outline_color = BLACK
                 elif signup_button.collidepoint(mouse_pos):
                     folder = os.getcwd()
                     file_name = folder + "\\accounts.csv"
