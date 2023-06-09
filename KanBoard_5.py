@@ -69,13 +69,13 @@ def draw(pos, button_choice):
     if button_choice["drawing"]:
         color = button_choice["color"]
         last_pos = button_choice["last_pos"]
-        distance_x = pos[0] - last_pos[0]
-        distance_y = pos[1] - last_pos[1]
-        distance = max(abs(distance_x), abs(distance_y))
-        step_x = distance_x / distance if distance != 0 else 0
-        step_y = distance_y / distance if distance != 0 else 0
+        drawing_distance_x = pos[0] - last_pos[0]
+        drawing_distance_y = pos[1] - last_pos[1]
+        drawing_distance = max(abs(drawing_distance_x), abs(drawing_distance_y))
+        step_x = drawing_distance_x / drawing_distance if drawing_distance != 0 else 0
+        step_y = drawing_distance_y / drawing_distance if drawing_distance != 0 else 0
 
-        for i in range(distance):
+        for i in range(drawing_distance):
             x = int(last_pos[0] + i * step_x)
             y = int(last_pos[1] + i * step_y)
             pygame.draw.circle(button_choice["whiteboard"], color, (x, y), button_choice["slider_width"] // 2)
@@ -98,7 +98,7 @@ def update_slider_width(pos, button_choice):
             # Update the slider width and position
             button_choice["slider_width"] = slider_width
             slider_pos = (button_choice["slider_width_rect"].left + int((button_choice["slider_width"] - 1) / 19 * button_choice["slider_width_rect"].width),
-                        button_choice["slider_width_rect"].centery)
+                        button_choice["slider_width_rect"])
             button_choice["slider_pos"] = slider_pos
 
             # Perform any additional actions based on the updated slider width
@@ -121,6 +121,12 @@ def load_whiteboard(button_choice, username):
     try:
         if os.path.exists(file_name):
             button_choice["whiteboard"] = pygame.image.load(file_name).convert()
+            confirm_load_font = pygame.font.Font(None, 36)
+            confirm_load_text = confirm_load_font.render("Whiteboard loaded", True, GREEN)
+            confirm_load_text_rect = confirm_load_text.get_rect(center=screen.get_rect().center)
+            screen.blit(confirm_load_text, confirm_load_text_rect)
+            pygame.display.flip()
+            pygame.time.wait(1 * 1000)
         else:
             load_error_font = pygame.font.Font(None, 36)
             load_error_text = load_error_font.render("Whiteboard not found", True, RED)
@@ -196,8 +202,6 @@ def run(username):
                 back_button_action(username)  # Trigger back button action on Backspace key press
 
         screen.blit(button_choice["whiteboard"], (0, 0))
-        
-        
 
         # Draw the buttons
         pygame.draw.rect(screen, BLACK, button_choice["black_button_rect"])
@@ -317,27 +321,29 @@ def login():
     running = True
 
     # Text input variables
-    username = ""
-    password = ""
-    active_field = "username"  # To keep track of the active text input field
-    username_outline_color = BLACK  # Outline color for username input box
-    password_outline_color = BLACK
+    login_username = ""
+    login_password = ""
+    active_field = "login_username"  # To keep track of the active text input field
+    login_username_outline_color = BLACK  # Outline color for username input box
+    login_password_outline_color = BLACK
 
     # Calculate vertical positions for username and password
-    username_y = screen_height // 2 - 50
-    password_y = username_y + 100
+    login_username_y = screen_height // 2 - 50
+    login_password_y = login_username_y + 100
 
     # Button variables
-    login_button = pygame.Rect(screen_width // 2 - 50, password_y + 80, 100, 30)
-    signup_button = pygame.Rect(screen_width // 2 - 50, password_y + 120, 100, 30)
-    button_color = BLACK
+    login_button = pygame.Rect(screen_width // 2 - 50, login_password_y + 80, 100, 30)
+    signup_button = pygame.Rect(screen_width // 2 - 50, login_password_y + 120, 100, 30)
+    exit_login_button = pygame.Rect(screen_width // 2 - 50, login_password_y + 160, 100, 30)
+    login_buttons_color = BLACK
     login_button_text = "Log In"
     signup_button_text = "Sign up"
+    exit_login_text = "Exit"
 
     # Invalid Login message variables
     invalid_login_text = ""
     invalid_login_font = pygame.font.Font(None, 24)
-    invalid_login_rect = pygame.Rect(screen_width // 2 - 100, password_y + 170, 200, 30)
+    invalid_login_rect = pygame.Rect(screen_width // 2 - 100, login_password_y + 200, 200, 30)
 
     while running:
         for event in pygame.event.get():
@@ -345,25 +351,45 @@ def login():
                 running = False
             elif event.type == KEYDOWN:
                 if event.key == K_BACKSPACE:
-                    if active_field == "username":
-                        username = username[:-1]
-                    elif active_field == "password":
-                        password = password[:-1]
+                    if active_field == "login_username":
+                        login_username = login_username[:-1]
+                    elif active_field == "login_password":
+                        login_password = login_password[:-1]
+                elif event.key == K_TAB:
+                    pass
+                elif event.key == K_RETURN:
+                    folder = os.getcwd()
+                    file_name = folder + "\\accounts.csv"
+                    with open(file_name, "r") as csv_file:
+                        reader = csv.reader(csv_file, delimiter=',')
+                        login_validity = False 
+                        for line in reader:
+                            if login_username == "" or login_password == "":
+                                invalid_login_text = "Invalid Login"
+                            elif login_username == line[0] and login_password == line[1]:
+                                login_validity = True
+                                invalid_login_text = ""
+                                user_folder = os.path.join("user_data", login_username)
+                                if not os.path.exists(user_folder):
+                                    os.makedirs(user_folder)
+                                menu_buttons(login_username)
+                            if not login_validity:
+                                invalid_login_text = "Invalid Login"
                 else:
-                    if active_field == "username":
-                        username += event.unicode
-                    elif active_field == "password":
-                        password += event.unicode
+                    if active_field == "login_username":
+                        login_username += event.unicode
+                    elif active_field == "login_password":
+                        login_password += event.unicode
             elif event.type == MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
-                if username_rect.collidepoint(mouse_pos):
-                    active_field = "username"
-                    username_outline_color = GREY
-                    password_outline_color = BLACK
-                elif password_rect.collidepoint(mouse_pos):
-                    active_field = "password"
-                    username_outline_color = BLACK
-                    password_outline_color = GREY
+                if login_username_rect.collidepoint(mouse_pos):
+                    active_field = "login_username"
+                    login_username_outline_color = GREY
+                    login_password_outline_color = BLACK
+                elif login_password_rect.collidepoint(mouse_pos):
+                    active_field = "login_password"
+                    login_username_outline_color = BLACK
+                    login_password_outline_color = GREY
                 elif login_button.collidepoint(mouse_pos):
                     folder = os.getcwd()
                     file_name = folder + "\\accounts.csv"
@@ -371,71 +397,80 @@ def login():
                         reader = csv.reader(csv_file, delimiter=',')
                         login_validity = False 
                         for line in reader:
-                            if username == "" or password == "":
+                            if login_username == "" or login_password == "":
                                 invalid_login_text = "Invalid Login"
-                            elif username == line[0] and password == line[1]:
+                            elif login_username == line[0] and login_password == line[1]:
                                 print("Credentials Matched")
                                 login_validity = True
                                 invalid_login_text = ""
-                                user_folder = os.path.join("user_data", username)
+                                user_folder = os.path.join("user_data", login_username)
                                 if not os.path.exists(user_folder):
                                     os.makedirs(user_folder)
-                                menu_buttons(username)
+                                menu_buttons(login_username)
                             if not login_validity:
                                 invalid_login_text = "Invalid Login"
                 elif signup_button.collidepoint(mouse_pos):
                     signup()
+                elif exit_login_button.collidepoint(mouse_pos):
+                    exit()
 
         # Clear the screen
         screen.fill(WHITE)
 
         # Draw title
-        font = pygame.font.Font(None, 48)
-        title_text = font.render("Log into KanBoard.5", True, BLACK)
-        title_text_rect = title_text.get_rect(center=(screen_width // 2, 350))
-        screen.blit(title_text, title_text_rect)
+        login_title_font = pygame.font.Font(None, 48)
+        login_title_text = login_title_font.render("Log into KanBoard.5", True, BLACK)
+        login_title_text_rect = login_title_text.get_rect(center=(screen_width // 2, 350))
+        screen.blit(login_title_text, login_title_text_rect)
 
         # Draw username label and input box
-        font = pygame.font.Font(None, 36)
-        username_label = font.render("Username:", True, BLACK)
-        username_label_rect = username_label.get_rect(center=(screen_width // 2, username_y))
-        screen.blit(username_label, username_label_rect)
+        login_label_font = pygame.font.Font(None, 36)
+        login_username_label = login_label_font.render("Username:", True, BLACK)
+        login_username_label_rect = login_username_label.get_rect(center=(screen_width // 2, login_username_y))
+        screen.blit(login_username_label, login_username_label_rect)
 
-        username_rect = pygame.Rect(screen_width // 2 - 100, username_y + 30, 200, 30)
-        pygame.draw.rect(screen, WHITE, username_rect)
-        pygame.draw.rect(screen, username_outline_color, username_rect, 2)  # Use username_outline_color for the outline
+        login_username_rect = pygame.Rect(screen_width // 2 - 100, login_username_y + 30, 200, 30)
+        pygame.draw.rect(screen, WHITE, login_username_rect)
+        pygame.draw.rect(screen, login_username_outline_color, login_username_rect, 2)  # Use username_outline_color for the outline
 
-        username_text = font.render(username, True, BLACK)
-        username_text_rect = username_text.get_rect(center=username_rect.center)
-        screen.blit(username_text, username_text_rect)
+        login_username_text = login_label_font.render(login_username, True, BLACK)
+        login_username_text_rect = login_username_text.get_rect(center=login_username_rect.center)
+        screen.blit(login_username_text, login_username_text_rect)
 
         # Draw password label and input box
-        password_label = font.render("Password:", True, BLACK)
-        password_label_rect = password_label.get_rect(center=(screen_width // 2, password_y))
-        screen.blit(password_label, password_label_rect)
+        login_password_label = login_label_font.render("Password:", True, BLACK)
+        login_password_label_rect = login_password_label.get_rect(center=(screen_width // 2, login_password_y))
+        screen.blit(login_password_label, login_password_label_rect)
 
-        password_rect = pygame.Rect(screen_width // 2 - 100, password_y + 30, 200, 30)
-        pygame.draw.rect(screen, WHITE, password_rect)
-        pygame.draw.rect(screen, password_outline_color, password_rect, 2)
+        login_password_rect = pygame.Rect(screen_width // 2 - 100, login_password_y + 30, 200, 30)
+        pygame.draw.rect(screen, WHITE, login_password_rect)
+        pygame.draw.rect(screen, login_password_outline_color, login_password_rect, 2)
 
-        password_text = font.render("*" * len(password), True, BLACK)
-        password_text_rect = password_text.get_rect(center=password_rect.center)
-        screen.blit(password_text, password_text_rect)
+        login_password_text = login_label_font.render("*" * len(login_password), True, BLACK)
+        login_password_text_rect = login_password_text.get_rect(center=login_password_rect.center)
+        screen.blit(login_password_text, login_password_text_rect)
 
         # Draw Log in button
-        pygame.draw.rect(screen, button_color, login_button)
-        button_font = pygame.font.Font(None, 24)
-        button_text_rendered = button_font.render(login_button_text, True, WHITE)
-        button_text_rect = button_text_rendered.get_rect(center=login_button.center)
-        screen.blit(button_text_rendered, button_text_rect)
+        pygame.draw.rect(screen, login_buttons_color, login_button)
+        login_button_font = pygame.font.Font(None, 24)
+        login_button_text_rendered = login_button_font.render(login_button_text, True, WHITE)
+        login_button_text_rect = login_button_text_rendered.get_rect(center=login_button.center)
+        screen.blit(login_button_text_rendered, login_button_text_rect)
         
         # Draw sign up button
-        pygame.draw.rect(screen, button_color, signup_button)
-        button_font = pygame.font.Font(None, 24)
-        button_text_rendered = button_font.render(signup_button_text, True, WHITE)
-        button_text_rect = button_text_rendered.get_rect(center=signup_button.center)
-        screen.blit(button_text_rendered, button_text_rect)
-
+        pygame.draw.rect(screen, login_buttons_color, signup_button)
+        signup_button_font = pygame.font.Font(None, 24)
+        signup_button_text_rendered = signup_button_font.render(signup_button_text, True, WHITE)
+        signup_button_text_rect = signup_button_text_rendered.get_rect(center=signup_button.center)
+        screen.blit(signup_button_text_rendered, signup_button_text_rect)
+        
+        # Draw Exit up button
+        pygame.draw.rect(screen, login_buttons_color, exit_login_button)
+        exit_login_button_font = pygame.font.Font(None, 24)
+        exit_login_button_text_rendered = exit_login_button_font.render(exit_login_text, True, WHITE)
+        exit_login_button_text_rect = exit_login_button_text_rendered.get_rect(center=exit_login_button.center)
+        screen.blit(exit_login_button_text_rendered, exit_login_button_text_rect)
+        
         # Draw invalid login message
         invalid_login_rendered = invalid_login_font.render(invalid_login_text, True, RED)
         screen.blit(invalid_login_rendered, invalid_login_rect)
@@ -465,14 +500,16 @@ def signup():
 
     # Button variables
     signup_button = pygame.Rect(screen_width // 2 - 50, signup_password_y + 80, 100, 30)
-    signup_back_button = pygame.Rect(screen_width // 2 - 50, signup_password_y + 80, 100, 30)
+    back_signup_button = pygame.Rect(screen_width // 2 - 50, signup_password_y + 120, 100, 30)
     signup_button_color = BLACK
+    back_signup_button_color = BLACK
     signup_button_text = "Sign Up"
+    back_signup_button_text = "Back"
 
     # Invalid Login message variables
     invalid_signup_text = ""
     invalid_signup_font = pygame.font.Font(None, 24)
-    invalid_signup_rect = pygame.Rect(screen_width // 2 - 100, signup_password_y + 120, 200, 30)
+    invalid_signup_rect = pygame.Rect(screen_width // 2 - 100, signup_password_y + 160, 200, 30)
 
     while running:
         for event in pygame.event.get():
@@ -484,6 +521,27 @@ def signup():
                         signup_username = signup_username[:-1]
                     elif signup_active_field == "signup_password":
                         signup_password = signup_password[:-1]
+                elif event.key == K_TAB:
+                    pass
+                elif event.key == K_RETURN:
+                    folder = os.getcwd()
+                    file_name = folder + "\\accounts.csv"
+                    with open(file_name, "r") as csv_file:
+                        reader = csv.reader(csv_file, delimiter=',')
+                        login_validity = False 
+                        for line in reader:
+                            if signup_username == "" or signup_password == "":
+                                invalid_signup_text = "Invalid username or password"
+                            elif signup_username == line[0] and signup_password == line[1]:
+                                print("Account Created")
+                                login_validity = True
+                                invalid_signup_text = ""
+                                user_folder = os.path.join("user_data")
+                                if not os.path.exists(user_folder):
+                                    os.makedirs(user_folder)
+                                menu_buttons(signup_username)
+                            if not login_validity:
+                                invalid_signup_text = "Invalid username or password"
                 else:
                     if signup_active_field == "signup_username":
                         signup_username += event.unicode
@@ -507,17 +565,18 @@ def signup():
                         for row in reader:
                             if signup_username == "" or signup_password == "":
                                 invalid_signup_text = "Invalid username or password"
-                                break  # Exit the loop if username is invalid
+                                break
                             elif signup_username in row:
                                 invalid_signup_text = "Username already taken"
-                                break  # Exit the loop if username is taken
+                                break
                         else:
                             # Append the new username and password on a new row
                             with open(file_name, "a", newline="") as csv_file:
-                                writer = csv.writer(csv_file)
-                                csv_file.write('\n')
-                                writer.writerow([signup_username, signup_password])
+                                csv_file.write("\n" + signup_username + "," + signup_password)
                             login()
+                elif back_signup_button.collidepoint(mouse_pos):
+                    login()
+                    
             # Clear the screen
         screen.fill(WHITE)
 
@@ -560,6 +619,14 @@ def signup():
         signup_button_text_rendered = signup_button_font.render(signup_button_text, True, WHITE)
         signup_button_text_rect = signup_button_text_rendered.get_rect(center=signup_button.center)
         screen.blit(signup_button_text_rendered, signup_button_text_rect)
+        
+        #Draw back button 
+        pygame.draw.rect(screen, back_signup_button_color, back_signup_button)
+        back_signup_button_font = pygame.font.Font(None, 24)
+        back_signup_button_text_rendered = back_signup_button_font.render(back_signup_button_text, True, WHITE)
+        back_signup_button_text_rect = back_signup_button_text_rendered.get_rect(center=back_signup_button.center)
+        screen.blit(back_signup_button_text_rendered, back_signup_button_text_rect)
+        
 
         # Draw invalid login message
         invalid_signup_rendered = invalid_signup_font.render(invalid_signup_text, True, RED)
