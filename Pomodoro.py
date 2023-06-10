@@ -1,6 +1,7 @@
 import pygame
 import sys
 from button import Button
+import subprocess
 
 def run_pomodoro_timer():
     pygame.init()
@@ -65,6 +66,9 @@ def run_pomodoro_timer():
                                             START_STOP_BUTTON.text_input, True, START_STOP_BUTTON.base_color)
             if event.type == pygame.USEREVENT and started:
                 current_seconds -= 1
+                if current_seconds <= 0:
+                    started = False
+                    subprocess.Popen(["python", "-c", "import winsound; winsound.Beep(440, 5000)"])  # Play the beep sound
 
         SCREEN.fill((0, 0, 0))
         SCREEN.blit(BACKDROP, BACKDROP.get_rect(center=(WIDTH/2, HEIGHT/2)))
