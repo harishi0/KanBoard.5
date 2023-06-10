@@ -80,7 +80,10 @@ def draw(pos, button_choice):
         for i in range(drawing_distance):
             x = int(last_pos[0] + i * step_x)
             y = int(last_pos[1] + i * step_y)
-            pygame.draw.circle(button_choice["whiteboard"], color, (x, y), button_choice["slider_width"] // 2)
+            
+            # Check if the point is within the whiteboard boundary
+            if button_choice["whiteboard_rect"].collidepoint(x, y):
+                pygame.draw.circle(button_choice["whiteboard"], color, (x, y), button_choice["slider_width"] // 2)
 
         button_choice["last_pos"] = pos
 
@@ -151,7 +154,7 @@ def choose_color():
         # You can choose to return a default color or handle it differently
         return BLACK  # Returning black color as an example
 
-def run(username):
+def run_whiteboard(username):
     pygame.init()
     info = pygame.display.Info()
     clock = pygame.time.Clock()
@@ -172,7 +175,7 @@ def run(username):
         "load_button_rect": pygame.Rect(780, 10, 100, 50),        
         "slider_width_rect": pygame.Rect(890, 10, 200, 20),
         "back_button_rect": pygame.Rect((info.current_w - 100) // 2, info.current_h - 60, 100, 50),
-        "whiteboard_menu_border": pygame.Rect(0, 100, 1000, 5),
+        "whiteboard_menu_border": pygame.Rect(0, 65, 1450, 2),
         "drawing": False,
         "last_pos": None,
         "color": BLACK,
@@ -249,7 +252,7 @@ def run(username):
 
 def menu_button_action(label, username):
     if label == "Whiteboard":
-        run(username)
+        run_whiteboard(username)
         
     elif label == "Kanban Board":
         print("Kanban Board button clicked")
@@ -521,7 +524,7 @@ def signup():
     invalid_signup_text = ""
     invalid_signup_font = pygame.font.Font(None, 24)
     invalid_signup_rect = pygame.Rect(screen_width // 2 - 100, signup_password_y + 160, 200, 30)
-
+    
     while running:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -582,17 +585,22 @@ def signup():
                             elif signup_username in row:
                                 invalid_signup_text = "Username already taken"
                                 break
-                        else:
-                            # Append the new username and password on a new row
-                            with open(file_name, "a", newline="") as csv_file:
-                                csv_file.write("\n" + signup_username + "," + signup_password)
-                            login()
+                            else:
+                                # Append the new username and password on a new row
+                                with open(file_name, "a", newline="") as csv_file:
+                                    csv_file.write("\n" + signup_username + "," + signup_password)
+                                confirm_signup_font = pygame.font.Font(None, 36)
+                                confirm_signup_text = confirm_signup_font.render("Account created", True, GREEN)
+                                confirm_signup_text_rect = confirm_signup_text.get_rect(center=screen.get_rect().center)
+                                screen.blit(confirm_signup_text, confirm_signup_text_rect, screen.fill(WHITE))
+                                pygame.display.flip()
+                                pygame.time.wait(1 * 1000)
+                                login()
                 elif back_signup_button.collidepoint(mouse_pos):
                     login()
                     
-            # Clear the screen
         screen.fill(WHITE)
-
+                    
         # Draw title
         font = pygame.font.Font(None, 48)
         signup_title_text = font.render("Sign up for KanBoard.5", True, BLACK)
@@ -653,7 +661,3 @@ def signup():
 
 if __name__ == '__main__':
     login()
-    
-    
-    
-    
