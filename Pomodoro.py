@@ -11,21 +11,21 @@ def run_pomodoro_timer():
 
     CLOCK = pygame.time.Clock()
 
-    BACKDROP = pygame.image.load("assets/backdrop.png")
+    BACKDROP = pygame.image.load("assets/Backdrop1.png")
     WHITE_BUTTON = pygame.image.load("assets/button.png")
 
-    FONT = pygame.font.Font("assets/ArialRoundedMTBold.ttf", 120)
+    FONT = pygame.font.Font("assets/times.ttf", 120)
     timer_text = FONT.render("25:00", True, "white")
     timer_text_rect = timer_text.get_rect(center=(WIDTH/2, HEIGHT/2-25))
 
     START_STOP_BUTTON = Button(WHITE_BUTTON, (WIDTH/2, HEIGHT/2+100), 170, 60, "START", 
-                        pygame.font.Font("assets/ArialRoundedMTBold.ttf", 20), "#c97676", "#9ab034")
+                        pygame.font.Font("assets/times.ttf", 20), "#c97676", "#9ab034")
     POMODORO_BUTTON = Button(None, (WIDTH/2-150, HEIGHT/2-140), 120, 30, "Work Session", 
-                        pygame.font.Font("assets/ArialRoundedMTBold.ttf", 20), "#FFFFFF", "#9ab034")
+                        pygame.font.Font("assets/times.ttf", 20), "#FFFFFF", "#9ab034")
     SHORT_BREAK_BUTTON = Button(None, (WIDTH/2, HEIGHT/2-140), 120, 30, "Short Break", 
-                        pygame.font.Font("assets/ArialRoundedMTBold.ttf", 20), "#FFFFFF", "#9ab034")
+                        pygame.font.Font("assets/times.ttf", 20), "#FFFFFF", "#9ab034")
     LONG_BREAK_BUTTON = Button(None, (WIDTH/2+150, HEIGHT/2-140), 120, 30, "Long Break", 
-                        pygame.font.Font("assets/ArialRoundedMTBold.ttf", 20), "#FFFFFF", "#9ab034")
+                        pygame.font.Font("assets/times.ttf", 20), "#FFFFFF", "#9ab034")
 
     POMODORO_LENGTH = 1500 # 1500 secs / 25 mins
     SHORT_BREAK_LENGTH = 300 # 300 secs / 5 mins
@@ -57,16 +57,16 @@ def run_pomodoro_timer():
                     started = False
                 if started:
                     START_STOP_BUTTON.text_input = "PAUSE"
-                    START_STOP_BUTTON.text = pygame.font.Font("assets/ArialRoundedMTBold.ttf", 20).render(
+                    START_STOP_BUTTON.text = pygame.font.Font("assets/times.ttf", 20).render(
                                             START_STOP_BUTTON.text_input, True, START_STOP_BUTTON.base_color)
                 else:
                     START_STOP_BUTTON.text_input = "START"
-                    START_STOP_BUTTON.text = pygame.font.Font("assets/ArialRoundedMTBold.ttf", 20).render(
+                    START_STOP_BUTTON.text = pygame.font.Font("assets/times.ttf", 20).render(
                                             START_STOP_BUTTON.text_input, True, START_STOP_BUTTON.base_color)
             if event.type == pygame.USEREVENT and started:
                 current_seconds -= 1
 
-        SCREEN.fill("#ba4949")
+        SCREEN.fill((0, 0, 0))
         SCREEN.blit(BACKDROP, BACKDROP.get_rect(center=(WIDTH/2, HEIGHT/2)))
 
         START_STOP_BUTTON.update(SCREEN)
