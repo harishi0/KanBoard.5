@@ -19,83 +19,86 @@ GRAY = (200, 200, 200)
 FONT_SIZE = 24
 FONT_NAME = pygame.font.get_default_font()
 
-# Create a Note class
-class Note:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.width = 200
-        self.height = 200
-        self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-        self.text = ""
-        self.selected = False
-        self.dragging = False
-        self.offset_x = 0
-        self.offset_y = 0
+# Create a Note function
+def create_note():
+    x = random.randint(0, WIDTH - 200)
+    y = random.randint(0, HEIGHT - 200)
+    width = 200
+    height = 200
+    color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+    text = ""
+    selected = False
+    dragging = False
+    offset_x = 0
+    offset_y = 0
 
-    def draw(self, screen):
-        pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
-        text_lines = self.text.split('\n')
+    def draw(screen):
+        pygame.draw.rect(screen, color, (x, y, width, height))
+        text_lines = text.split('\n')
         for i, line in enumerate(text_lines):
             text_surface = font.render(line, True, BLACK)
-            screen.blit(text_surface, (self.x + 10, self.y + 10 + (i * FONT_SIZE)))
+            screen.blit(text_surface, (x + 10, y + 10 + (i * FONT_SIZE)))
 
     def handle_event(self, event):
-        if event.type == pygame.KEYDOWN:   
+        if event.type == pygame.KEYDOWN:
             if self.selected:
                 if event.key == pygame.K_RETURN:
-                    self.text += '\n'
+                    text += '\n'
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
-                else:    
+                else:
                     self.text += event.unicode
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                if self.x < event.pos[0] < self.x + self.width and self.y < event.pos[1] < self.y + self.height:
-                    self.selected = True
-                    self.dragging = True
-                    self.offset_x = event.pos[0] - self.x
-                    self.offset_y = event.pos[1] - self.y
+                if x < event.pos[0] < x + width and y < event.pos[1] < y + height:
+                    selected = True
+                    dragging = True
+                    offset_x = event.pos[0] - x
+                    offset_y = event.pos[1] - y
                 else:
-                    self.selected = False
-                    self.dragging = False
+                    selected = False
+                    dragging = False
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
-                self.dragging = False
+                dragging = False
         elif event.type == pygame.MOUSEMOTION:
-            if self.dragging:
-                self.x = event.pos[0] - self.offset_x
-                self.y = event.pos[1] - self.offset_y
+            if dragging:
+                x = event.pos[0] - offset_x
+                y = event.pos[1] - offset_y
 
-    def update(self):
-        if self.selected:
+    def update():
+        if selected:
             pygame.mouse.set_visible(False)
         else:
             pygame.mouse.set_visible(True)
 
-# Create a Button class
-class Button:
-    def __init__(self, x, y, width, height, color, text, text_color):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.color = color
-        self.text = text
-        self.text_color = text_color
+    return {
+        'draw': draw,
+        'handle_event': handle_event,
+        'update': update
+    }
 
-    def draw(self, screen):
-        pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
-        text_surface = font.render(self.text, True, self.text_color)
-        text_x = self.x + (self.width - text_surface.get_width()) // 2
-        text_y = self.y + (self.height - text_surface.get_height()) // 2
+
+# Create a Button function
+def create_button(x, y, width, height, color, text, text_color):
+    def draw(screen):
+        pygame.draw.rect(screen, color, (x, y, width, height))
+        text_surface = font.render(text, True, text_color)
+        text_x = x + (width - text_surface.get_width()) // 2
+        text_y = y + (height - text_surface.get_height()) // 2
         screen.blit(text_surface, (text_x, text_y))
 
-    def is_clicked(self, event):
+    def is_clicked(event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                return self.x < event.pos[0] < self.x + self.width and self.y < event.pos[1] < self.y + self.height
+                return x < event.pos[0] < x + width and y < event.pos[1] < y + height
         return False
+
+    return {
+        'draw': draw,
+        'is_clicked': is_clicked
+    }
+
 
 # Create the screen
 pygame.display.set_caption("Sticky Notes App")
@@ -114,7 +117,7 @@ button_y = 20
 button_color = GRAY
 button_text = "Create Note"
 button_text_color = BLACK
-create_button = Button(button_x, button_y, button_width, button_height, button_color, button_text, button_text_color)
+create_button = create_button(button_x, button_y, button_width, button_height, button_color, button_text, button_text_color)
 
 # Game loop
 running = True
@@ -126,11 +129,11 @@ while running:
         else:
             # Handle events for each note
             for note in notes:
-                note.handle_event(event)
+                note['handle_event'](event)
 
             # Check if the "Create Note" button is clicked
-            if create_button.is_clicked(event):
-                new_note = Note(random.randint(0, WIDTH - 200), random.randint(0, HEIGHT - 200))
+            if create_button['is_clicked'](event):
+                new_note = create_note()
                 notes.append(new_note)
 
     # Clear the screen
@@ -138,11 +141,11 @@ while running:
 
     # Draw notes
     for note in notes:
-        note.draw(screen)
-        note.update()
+        note['draw'](screen)
+        note['update']()
 
     # Draw the "Create Note" button
-    create_button.draw(screen)
+    create_button['draw'](screen)
 
     # Update the display
     pygame.display.flip()
