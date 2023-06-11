@@ -181,7 +181,14 @@ while running:
     # Update the display
     pygame.display.flip()
 
+# Save notes to a file
+note_data = []
+for note in notes:
+    note_data.append((note['text'], note['x'], note['y']))
 
+with open('notes.txt', 'w') as file:
+    for data in note_data:
+        file.write(f"{data[0]}|{data[1]}|{data[2]}\n")
 
 # Quit the application
 pygame.quit()
