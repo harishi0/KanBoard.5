@@ -80,7 +80,7 @@ def run_pomodoro_timer():
                 current_seconds -= 1
                 if current_seconds <= 0:
                     started = False
-                    subprocess.Popen(["python", "-c", "import winsound; winsound.Beep(440, 5000)"])  # Play the beep sound
+                    subprocess.Popen(["python", "-c", "import winsound; winsound.Beep(440, 4000)"])  # Play the beep sound
 
         SCREEN.fill((0, 0, 0))
         SCREEN.blit(BACKDROP, BACKDROP.get_rect(center=(WIDTH/2, HEIGHT/2)))
