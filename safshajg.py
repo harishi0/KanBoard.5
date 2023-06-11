@@ -4,11 +4,10 @@ import random
 
 # Initialize Pygame
 pygame.init()
-pygame.init()
 screen_info = pygame.display.Info()
 WIDTH = screen_info.current_w
 HEIGHT = screen_info.current_h
-screen = pygame.display.set_mode((0,0),FULLSCREEN)
+screen = pygame.display.set_mode((0, 0), FULLSCREEN)
 
 # Set the colors
 WHITE = (255, 255, 255)
@@ -21,24 +20,21 @@ FONT_NAME = pygame.font.get_default_font()
 
 # Create a Note class
 class Note:
-    pass
-    # Rest of the code...
-
-# Create a Button class
-class Button:
     def __init__(self, x, y):
-            self.x = x
-            self.y = y
-            self.width = 200
-            self.height = 200
-            self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-            self.text = ""
-            self.selected = False
-            self.dragging = False
-            self.offset_x = 0
-            self.offset_y = 0
+        self.x = x
+        self.y = y
+        self.width = 200
+        self.height = 200
+        self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+        self.text = ""
+        self.selected = False
+        self.dragging = False
+        self.offset_x = 0
+        self.offset_y = 0
 
-    def createNote(self, screen):
+    def draw(self, screen):
+        if self.selected:
+            pygame.draw.rect(screen, (255, 255, 0), (self.x - 5, self.y - 5, self.width + 10, self.height + 10))
         pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
         text_lines = self.text.split('\n')
         for i, line in enumerate(text_lines):
@@ -46,7 +42,7 @@ class Button:
             screen.blit(text_surface, (self.x + 10, self.y + 10 + (i * FONT_SIZE)))
 
     def handle_event(self, event):
-        if event.type == pygame.KEYDOWN:   
+        if event.type == pygame.KEYDOWN:
             if self.selected:
                 if event.key == pygame.K_RETURN:
                     self.text += '\n'
@@ -73,12 +69,38 @@ class Button:
                 self.y = event.pos[1] - self.offset_y
 
     def update(self):
-        if self.selected:
-            pygame.mouse.set_visible(False)
-        else:
-            pygame.mouse.set_visible(True)
+        pass
+
+
+# Create a Button class
+class Button:
+    def __init__(self, x, y, width, height, color, text, text_color):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.color = color
+        self.text = text
+        self.text_color = text_color
+
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
+        text_surface = font.render(self.text, True, self.text_color)
+        text_x = self.x + (self.width - text_surface.get_width()) // 2
+        text_y = self.y + (self.height - text_surface.get_height()) // 2
+        screen.blit(text_surface, (text_x, text_y))
+
+    def is_clicked(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                return self.x < event.pos[0] < self.x + self.width and self.y < event.pos[1] < self.y + self.height
+        return False
+
+    def update(self):
+        pass
 
 # Create the screen
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Sticky Notes App")
 
 # Create the font
@@ -97,6 +119,9 @@ button_text = "Create Note"
 button_text_color = BLACK
 create_button = Button(button_x, button_y, button_width, button_height, button_color, button_text, button_text_color)
 
+# Create the "Delete Note" button
+delete_button = Button(button_x, button_y + button_height + 10, button_width, button_height, button_color, "Delete Note", button_text_color)
+
 # Game loop
 running = True
 while running:
@@ -114,6 +139,12 @@ while running:
                 new_note = Note(random.randint(0, WIDTH - 200), random.randint(0, HEIGHT - 200))
                 notes.append(new_note)
 
+            # Check if the "Delete Note" button is clicked
+            if delete_button.is_clicked(event):
+                for note in notes:
+                    if note.selected:
+                        notes.remove(note)
+
     # Clear the screen
     screen.fill(WHITE)
 
@@ -122,8 +153,13 @@ while running:
         note.draw(screen)
         note.update()
 
-    # Draw the "Create Note" button
+    # Draw the buttons
     create_button.draw(screen)
+    delete_button.draw(screen)
+
+    # Update the buttons
+    create_button.update()
+    delete_button.update()
 
     # Update the display
     pygame.display.flip()
@@ -134,6 +170,7 @@ save_data = {
 }
 with open('save_file.txt', 'w') as file:
     file.write(str(save_data))
+
 # Load the saved state
 with open('save_file.txt', 'r') as file:
     saved_data = file.read()

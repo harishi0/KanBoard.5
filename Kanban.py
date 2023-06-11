@@ -14,6 +14,7 @@ screen = pygame.display.set_mode((0,0),FULLSCREEN)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (200, 200, 200)
+YELLOW = (255, 255, 0)
 
 # Set the font properties
 FONT_SIZE = 24
@@ -33,6 +34,8 @@ def create_note():
     offset_y = 0
 
     def draw(screen):
+        if selected:
+            pygame.draw.rect(screen, YELLOW, (x - 5, y - 5, width + 10, height + 10))
         pygame.draw.rect(screen, color, (x, y, width, height))
         text_lines = text.split('\n')
         for i, line in enumerate(text_lines):
@@ -102,6 +105,7 @@ def create_button(x, y, width, height, color, text, text_color):
 
 
 # Create the screen
+# screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Sticky Notes App")
 
 # Create the font
