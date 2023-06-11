@@ -49,7 +49,6 @@ def handle_event(note, event):
         elif event.button == 3:
             if note['x'] <= mouse_pos[0] <= note['x'] + note['width'] and note['y'] <= mouse_pos[1] <= note['y'] + note['height']:
                 note['color'] = random.choice([RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA])
-                
     elif event.type == pygame.KEYDOWN and note['selected']:
         if event.key == pygame.K_BACKSPACE:
             if pygame.key.get_mods() & pygame.KMOD_CTRL and pygame.key.get_pressed()[pygame.K_BACKSPACE]:
@@ -153,52 +152,53 @@ load_button_text_color = BLACK
 
 load_notes()
 
-# Main game loop
-running = True
-clock = pygame.time.Clock()
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            save_notes()
-            running = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_BACKSPACE:
-                if pygame.key.get_mods() & pygame.KMOD_CTRL and pygame.key.get_pressed()[pygame.K_BACKSPACE]:
-                    for note in notes:
-                        if note['selected']:
-                            notes.remove(note)
+def runkanban():
+    # Main game loop
+    running = True
+    clock = pygame.time.Clock()
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                save_notes()
+                running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    if pygame.key.get_mods() & pygame.KMOD_CTRL and pygame.key.get_pressed()[pygame.K_BACKSPACE]:
+                        for note in notes:
+                            if note['selected']:
+                                notes.remove(note)
 
-        for note in notes:
-            handle_event(note, event)
-
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_pos = pygame.mouse.get_pos()
-            if event.button == 1:
-                if button_x <= mouse_pos[0] <= button_x + button_width and button_y <= mouse_pos[1] <= button_y + button_height:
-                    create_note()
-                elif save_button_x <= mouse_pos[0] <= save_button_x + save_button_width and save_button_y <= mouse_pos[1] <= save_button_y + save_button_height:
-                    save_notes()
-                elif load_button_x <= mouse_pos[0] <= load_button_x + load_button_width and load_button_y <= mouse_pos[1] <= load_button_y + load_button_height:
-                    load_notes()
-                elif clear_button_x <= mouse_pos[0] <= clear_button_x + clear_button_width and clear_button_y <= mouse_pos[1] <= clear_button_y + clear_button_height:
-                    notes.clear()
-
-        if event.type == pygame.MOUSEMOTION:
             for note in notes:
-                if note['selected']:
-                    mouse_pos = pygame.mouse.get_pos()
-                    note['x'] = mouse_pos[0] - note['offset'][0]
-                    note['y'] = mouse_pos[1] - note['offset'][1]
+                handle_event(note, event)
 
-    screen.fill(WHITE)
-    draw_button(button_x, button_y, button_width, button_height, button_color, button_text, button_text_color)
-    draw_button(save_button_x, save_button_y, save_button_width, save_button_height, save_button_color, save_button_text, save_button_text_color)
-    draw_button(load_button_x, load_button_y, load_button_width, load_button_height, load_button_color, load_button_text, load_button_text_color)
-    draw_button(clear_button_x, clear_button_y, clear_button_width, clear_button_height, clear_button_color, clear_button_text, clear_button_text_color)
-    for note in notes:
-        draw_note(note)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                if event.button == 1:
+                    if button_x <= mouse_pos[0] <= button_x + button_width and button_y <= mouse_pos[1] <= button_y + button_height:
+                        create_note()
+                    elif save_button_x <= mouse_pos[0] <= save_button_x + save_button_width and save_button_y <= mouse_pos[1] <= save_button_y + save_button_height:
+                        save_notes()
+                    elif load_button_x <= mouse_pos[0] <= load_button_x + load_button_width and load_button_y <= mouse_pos[1] <= load_button_y + load_button_height:
+                        load_notes()
+                    elif clear_button_x <= mouse_pos[0] <= clear_button_x + clear_button_width and clear_button_y <= mouse_pos[1] <= clear_button_y + clear_button_height:
+                        notes.clear()
 
-    pygame.display.flip()
-    clock.tick(144)
+            if event.type == pygame.MOUSEMOTION:
+                for note in notes:
+                    if note['selected']:
+                        mouse_pos = pygame.mouse.get_pos()
+                        note['x'] = mouse_pos[0] - note['offset'][0]
+                        note['y'] = mouse_pos[1] - note['offset'][1]
 
+        screen.fill(WHITE)
+        draw_button(button_x, button_y, button_width, button_height, button_color, button_text, button_text_color)
+        draw_button(save_button_x, save_button_y, save_button_width, save_button_height, save_button_color, save_button_text, save_button_text_color)
+        draw_button(load_button_x, load_button_y, load_button_width, load_button_height, load_button_color, load_button_text, load_button_text_color)
+        draw_button(clear_button_x, clear_button_y, clear_button_width, clear_button_height, clear_button_color, clear_button_text, clear_button_text_color)
+        for note in notes:
+            draw_note(note)
+
+        pygame.display.flip()       
+
+runkanban()
 pygame.quit()
