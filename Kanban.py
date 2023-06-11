@@ -39,15 +39,16 @@ def create_note():
             text_surface = font.render(line, True, BLACK)
             screen.blit(text_surface, (x + 10, y + 10 + (i * FONT_SIZE)))
 
-    def handle_event(self, event):
+    def handle_event(event):
+        nonlocal selected, dragging, x, y, offset_x, offset_y, text
         if event.type == pygame.KEYDOWN:
-            if self.selected:
+            if selected:
                 if event.key == pygame.K_RETURN:
                     text += '\n'
                 elif event.key == pygame.K_BACKSPACE:
-                    self.text = self.text[:-1]
+                    text = text[:-1]
                 else:
-                    self.text += event.unicode
+                    text += event.unicode
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 if x < event.pos[0] < x + width and y < event.pos[1] < y + height:
