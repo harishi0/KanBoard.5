@@ -235,6 +235,12 @@ def run_whiteboard(username):
         screen.blit(button_font.render("RGB", True, WHITE), (button_choice["rgb_picker_rect"].x + 30, button_choice["rgb_picker_rect"].y + 5))
         screen.blit(button_font.render("Selector", True, WHITE), (button_choice["rgb_picker_rect"].x + 20, button_choice["rgb_picker_rect"].y + 25))
 
+        # Draw the RGB picker text
+        rgb_ok_text = "*Press OK twice"
+        rgb_ok_text_rect = button_font.render(rgb_ok_text, True, BLACK).get_rect()
+        rgb_ok_text_rect.midtop = (button_choice["rgb_picker_rect"].centerx, button_choice["rgb_picker_rect"].bottom + 5)
+        screen.blit(button_font.render(rgb_ok_text, True, BLACK), rgb_ok_text_rect)
+        
         # Draw the slider
         pygame.draw.rect(screen, GREY, button_choice["slider_width_rect"])
         pygame.draw.rect(screen, BLACK, button_choice["slider_width_rect"], 2)
