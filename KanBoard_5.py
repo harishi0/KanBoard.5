@@ -257,6 +257,42 @@ def run_whiteboard(username):
     
 # Calendar Section
 
+# Function to save the calendar edition
+def save_calendar(username, notes):
+    try:
+        folder_path = os.path.join("user_data", username)  # Create a folder path based on the username
+        os.makedirs(folder_path, exist_ok=True)  # Create the folder if it doesn't exist
+        file_name = os.path.join(folder_path, f"{username}_calendar_notes.txt")  # Use the folder path to create the file_name
+        with open(file_name, "a") as file:
+            for date, note in notes.items():
+                file.write(f"{date[0]},{date[1]},{date[2]}:{note}\n")
+        print("Calendar edition saved successfully.")
+    except IOError:
+        print("Error occurred while saving the calendar edition.")
+
+def load_calendar(username):
+    notes = {}  # Initialize the dictionary
+    try:
+        folder_path = os.path.join("user_data", username)  # Create a folder path based on the username
+        file_name = os.path.join(folder_path, f"{username}_calendar_notes.txt")  # Use the folder path to create the file_name
+        
+        with open(file_name, "r") as file:
+            for line in file:
+                parts = line.strip().split(":")
+                date_parts = parts[0].split(",")
+                year = int(date_parts[0])
+                month = int(date_parts[1])
+                day = int(date_parts[2])
+                note = ":".join(parts[1:])
+                notes[(year, month, day)] = note
+                
+        print("Calendar edition loaded successfully.")
+        return notes  # Return the notes dictionary
+    except FileNotFoundError:
+        print("Calendar edition file not found.")
+    except IOError:
+        print("Error occurred while loading the calendar edition.")
+
 def run_calendar(username):
     # Set window dimensions
     WINDOW_WIDTH = 800
@@ -289,51 +325,11 @@ def run_calendar(username):
     cell_width = WINDOW_WIDTH // 7
     cell_height = (WINDOW_HEIGHT - grid_y) // 7
 
-    # Create a notes dictionary to store notes for each day
-    notes = {}
-
     # Variable to track the text input state
     input_active = False
     input_text = ""
     
-    load_calendar()
-
-    # Function to save the calendar edition
-    def save_calendar(username):
-        try:
-            folder_path = os.path.join("user_data", username)  # Create a folder path based on the username
-            os.makedirs(folder_path, exist_ok=True)  # Create the folder if it doesn't exist
-            file_name = os.path.join(folder_path, f"{username}_calendar_notes.txt")  # Use the folder path to create the file_name
-            with open(file_name, "a") as file:
-                for date, note in notes.items():
-                    file.write(f"{date[0]},{date[1]},{date[2]}:{note}\n")
-            print("Calendar edition saved successfully.")
-        except IOError:
-            print("Error occurred while saving the calendar edition.")
-
-    # Function to load the calendar edition
-    def load_calendar():
-        try:
-            folder_path = os.path.join("user_data", username)  # Create a folder path based on the username
-            file_name = os.path.join(folder_path, f"{username}_whiteboard.png")  # Use the folder path to create the file_name
-            with open(file_name, "r") as file:
-                for line in file:
-                    parts = line.strip().split(":")
-                    date_parts = parts[0].split(",")
-                    year = int(date_parts[0])
-                    month = int(date_parts[1])
-                    day = int(date_parts[2])
-                    note = parts[1]
-                    notes[(year, month, day)] = note
-            print("Calendar edition loaded successfully.")
-        except FileNotFoundError:
-            print("Calendar edition file not found.")
-        except IOError:
-            print("Error occurred while loading the calendar edition.")
-
-    # Load the calendar edition
-
-    load_calendar()
+    notes = load_calendar(username)
     
     # Main game loop
     clock = pygame.time.Clock()
@@ -342,7 +338,6 @@ def run_calendar(username):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-
             # Check for arrow key presses
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
@@ -360,11 +355,9 @@ def run_calendar(username):
                     if input_text != "":
                         notes[(current_year, current_month, current_day)] = input_text
                         input_text = ""
-                        save_calendar(username)
+                        save_calendar(username, notes)
                 elif event.key == pygame.K_ESCAPE:
-                    # Save and exit the program
-                    save_calendar(username)
-                    running = False
+                    pass
 
                 # Handle text input events
                 if input_active:
@@ -451,7 +444,6 @@ def run_calendar(username):
 
     # Save calendar edition and quit Pygame
     pygame.quit()
-
 
 #Timer Section
 
