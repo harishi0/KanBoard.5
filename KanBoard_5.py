@@ -157,7 +157,6 @@ def choose_color():
         return BLACK  # Returning black color as an example
 
 def run_whiteboard(username):
-    pygame.init()
     info = pygame.display.Info()
     clock = pygame.time.Clock()
     whiteboard = pygame.Surface((info.current_w, info.current_h))
@@ -253,13 +252,8 @@ def run_whiteboard(username):
 #Timer Section
 
 def run_pomodoro_timer(username):
-    pygame.init()
-
-    WIDTH, HEIGHT = 900, 600
-    SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Pomodoro Timer")
-
-    CLOCK = pygame.time.Clock()
+    
+    WIDTH, HEIGHT = screen.get_size()
 
     BACKDROP = pygame.image.load("assets/Backdrop1.png")
     WHITE_BUTTON = pygame.image.load("assets/button.png")
@@ -324,27 +318,27 @@ def run_pomodoro_timer(username):
                     started = False
                     subprocess.Popen(["python", "-c", "import winsound; winsound.Beep(440, 5000)"])  # Play the beep sound
 
-        SCREEN.fill((0, 0, 0))
-        SCREEN.blit(BACKDROP, BACKDROP.get_rect(center=(WIDTH/2, HEIGHT/2)))
+        screen.fill((0, 0, 0))
+        screen.blit(BACKDROP, BACKDROP.get_rect(center=(WIDTH/2, HEIGHT/2)))
 
-        START_STOP_BUTTON.update(SCREEN)
+        START_STOP_BUTTON.update(screen)
         START_STOP_BUTTON.change_color(pygame.mouse.get_pos())
-        POMODORO_BUTTON.update(SCREEN)
+        POMODORO_BUTTON.update(screen)
         POMODORO_BUTTON.change_color(pygame.mouse.get_pos())
-        SHORT_BREAK_BUTTON.update(SCREEN)
+        SHORT_BREAK_BUTTON.update(screen)
         SHORT_BREAK_BUTTON.change_color(pygame.mouse.get_pos())
-        LONG_BREAK_BUTTON.update(SCREEN)
+        LONG_BREAK_BUTTON.update(screen)
         LONG_BREAK_BUTTON.change_color(pygame.mouse.get_pos())
-        BACK_BUTTON.update(SCREEN)
+        BACK_BUTTON.update(screen)
         BACK_BUTTON.change_color(pygame.mouse.get_pos())
 
         if current_seconds >= 0:
             display_seconds = current_seconds % 60
             display_minutes = int(current_seconds / 60) % 60
         timer_text = FONT.render(f"{display_minutes:02}:{display_seconds:02}", True, "white")
-        SCREEN.blit(timer_text, timer_text_rect)
+        screen.blit(timer_text, timer_text_rect)
 
-        pygame.display.update()
+        pygame.display.flip()
 
 #Menu Section
 
@@ -360,6 +354,7 @@ def menu_button_action(label, username):
     elif label == "Timer":
         print("Timer button clicked")
         run_pomodoro_timer(username)
+        menu_buttons(username)
     elif label == "Exit":
         pygame.quit()
         sys.exit()
@@ -373,8 +368,8 @@ def menu_buttons(username):
     button_height = 50
     button_spacing = 20
     button_font = pygame.font.Font(None, 24)
-    button_color = (0, 0, 0)
-    button_text_color = (255, 255, 255)
+    button_color = BLACK
+    button_text_color = WHITE
 
     while True:
         for event in pygame.event.get():
@@ -396,8 +391,8 @@ def menu_buttons(username):
                             menu_button_action(label, username)
                         
 
-        screen.fill((255, 255, 255))
-
+        screen.fill(WHITE)
+        
         for i, label in enumerate(button_labels):
             button_rect = pygame.Rect(
                 (screen.get_width() - button_width) // 2,
@@ -453,7 +448,6 @@ def login():
     invalid_login_font = pygame.font.Font(None, 24)
     invalid_login_rect = pygame.Rect(screen_width // 2 - 100, login_password_y + 200, 200, 30)
 
-    
     while running:
         for event in pygame.event.get():
             if event.type == QUIT:

@@ -1,4 +1,7 @@
 import pygame
+from pygame.locals import *
+
+screen = pygame.display.set_mode((0, 0), FULLSCREEN)
 
 class Button():
 	def __init__(self, surface=None, pos=None, width=None, height=None, text_input=None, font=None, base_color=None, hovering_color=None):
