@@ -8,6 +8,8 @@ from tkinter import colorchooser
 from button import Button
 import subprocess
 
+pygame.display.set_caption('KanBoard.5')
+
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 BLUE = (0, 191, 255)
@@ -66,7 +68,7 @@ def slider_motion(pos, button_choice):
     if button_choice["drag_slider"]:
         update_slider_width(pos, button_choice)
 
-    if button_choice["drawing"]:
+    if button_choice["drawing"] and not button_choice["drag_slider"]:  # Add a check for "drag_slider"
         draw(pos, button_choice)
 
 def draw(pos, button_choice):
@@ -82,10 +84,7 @@ def draw(pos, button_choice):
         for i in range(drawing_distance):
             x = int(last_pos[0] + i * step_x)
             y = int(last_pos[1] + i * step_y)
-            
-            # Check if the point is within the whiteboard boundary
-            if button_choice["whiteboard_rect"].collidepoint(x, y):
-                pygame.draw.circle(button_choice["whiteboard"], color, (x, y), button_choice["slider_width"] // 2)
+            pygame.draw.circle(button_choice["whiteboard"], color, (x, y), button_choice["slider_width"] // 2)
 
         button_choice["last_pos"] = pos
 
@@ -176,7 +175,6 @@ def run_whiteboard(username):
         "load_button_rect": pygame.Rect(780, 10, 100, 50),        
         "slider_width_rect": pygame.Rect(890, 10, 200, 20),
         "back_button_rect": pygame.Rect((info.current_w - 100) // 2, info.current_h - 60, 100, 50),
-        "whiteboard_menu_border": pygame.Rect(0, 65, 1450, 2),
         "drawing": False,
         "last_pos": None,
         "color": BLACK,
@@ -224,7 +222,6 @@ def run_whiteboard(username):
         pygame.draw.rect(screen, BLACK, button_choice["load_button_rect"])
         pygame.draw.rect(screen, button_choice["color"], button_choice["color_choice_rect"])
         pygame.draw.rect(screen, BLACK, button_choice["back_button_rect"])
-        pygame.draw.rect(screen, BLACK, button_choice["whiteboard_menu_border"])
 
         # Draw the button labels
         button_font = pygame.font.SysFont("Arial", 20)
