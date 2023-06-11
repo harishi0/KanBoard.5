@@ -49,9 +49,15 @@ def create_note():
                 if event.key == pygame.K_RETURN:
                     text += '\n'
                 elif event.key == pygame.K_BACKSPACE:
-                    text = text[:-1]
+                    if pygame.key.get_mods() & pygame.KMOD_CTRL and pygame.key.get_pressed()[pygame.K_BACKSPACE]:
+                        # Delete the selected note
+                        if selected:
+                            notes.remove(note)
+                    else:
+                        text = text[:-1]
                 else:
                     text += event.unicode
+                
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 if x < event.pos[0] < x + width and y < event.pos[1] < y + height:
@@ -69,17 +75,14 @@ def create_note():
             if dragging:
                 x = event.pos[0] - offset_x
                 y = event.pos[1] - offset_y
-
     def update():
-        if selected:
-            pygame.mouse.set_visible(False)
-        else:
-            pygame.mouse.set_visible(True)
+        #idk why but the code wont run without this function no matter what i do 
+        pass
 
     return {
         'draw': draw,
         'handle_event': handle_event,
-        'update': update
+        'update': update # or this
     }
 
 
@@ -105,7 +108,6 @@ def create_button(x, y, width, height, color, text, text_color):
 
 
 # Create the screen
-# screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Sticky Notes App")
 
 # Create the font
