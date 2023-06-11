@@ -281,7 +281,7 @@ def run_pomodoro_timer(username):
     SHORT_BREAK_LENGTH = 300 # 300 secs / 5 mins
     LONG_BREAK_LENGTH = 900 # 900 secs / 15 mins
     
-    BACK_BUTTON = Button(WHITE_BUTTON, (WIDTH/2, HEIGHT/2+180), 170, 60, "Back", 
+    BACK_BUTTON = Button(WHITE_BUTTON, (WIDTH/2, HEIGHT/2+180), 170, 60, "BACK", 
                         pygame.font.Font("assets/times.ttf", 20), "#c97676", "#9ab034")
 
     current_seconds = POMODORO_LENGTH
