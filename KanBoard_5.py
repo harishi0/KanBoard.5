@@ -287,11 +287,12 @@ def load_calendar(username):
                 notes[(year, month, day)] = note
                 
         print("Calendar edition loaded successfully.")
-        return notes  # Return the notes dictionary
     except FileNotFoundError:
         print("Calendar edition file not found.")
     except IOError:
         print("Error occurred while loading the calendar edition.")
+    
+    return notes  # Return the notes dictionary
 
 def run_calendar(username):
     # Set window dimensions
@@ -334,6 +335,7 @@ def run_calendar(username):
     
     notes = load_calendar(username)
 
+    
     # Main game loop
     clock = pygame.time.Clock()
     running = True
