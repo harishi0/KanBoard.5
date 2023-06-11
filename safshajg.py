@@ -13,7 +13,7 @@ screen = pygame.display.set_mode((0, 0), FULLSCREEN)
 # Set the font properties
 FONT_SIZE = 24
 FONT_NAME = pygame.font.get_default_font()
-font = pygame.font.SysFont(FONT_NAME, FONT_SIZE)
+font = pygame.font.Font(FONT_NAME, FONT_SIZE)
 
 # Define colors
 WHITE = (255, 255, 255)
@@ -24,6 +24,7 @@ BLUE = (0, 0, 255)
 CYAN = (0, 255, 255)
 MAGENTA = (255, 0, 255)
 BLACK = (0, 0, 0)
+GRAY = (128, 128, 128)
 
 notes = []  # List to store notes
 
@@ -101,6 +102,55 @@ def create_note():
     }
     notes.append(note)
 
+def draw_button(x, y, width, height, color, text, text_color):
+    pygame.draw.rect(screen, color, (x, y, width, height))
+    text_surface = font.render(text, True, text_color)
+    text_x = x + (width - text_surface.get_width()) // 2
+    text_y = y + (height - text_surface.get_height()) // 2
+    screen.blit(text_surface, (text_x, text_y))
+# Create the "Create Note" button
+button_width = 150
+button_height = 50
+button_x = (WIDTH - button_width) // 2
+button_y = 20
+button_color = GRAY
+button_text = "Create Note"
+button_text_color = BLACK
+
+# Calculate the spacing between buttons
+button_spacing = 10
+
+# Calculate the positions of the buttons
+save_button_x = button_x - button_width - button_spacing
+clear_button_x = button_x + button_width + button_spacing
+
+# Create the "Save" button
+save_button_width = 150
+save_button_height = 50
+save_button_y = button_y
+save_button_color = GRAY
+save_button_text = "Save"
+save_button_text_color = BLACK
+
+# Create the "Clear" button
+clear_button_width = 150
+clear_button_height = 50
+clear_button_y = button_y
+clear_button_color = GRAY
+clear_button_text = "Clear"
+clear_button_text_color = BLACK
+
+# Calculate the position of the "Load" button
+load_button_x = clear_button_x + clear_button_width + button_spacing
+
+# Create the "Load" button
+load_button_width = 150
+load_button_height = 50
+load_button_y = button_y
+load_button_color = GRAY
+load_button_text = "Load"
+load_button_text_color = BLACK
+
 load_notes()
 
 # Main game loop
@@ -112,11 +162,26 @@ while running:
             save_notes()
             running = False
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_c:
-                create_note()
+            if event.key == pygame.K_BACKSPACE:
+                if pygame.key.get_mods() & pygame.KMOD_CTRL and pygame.key.get_pressed()[pygame.K_BACKSPACE]:
+                    for note in notes:
+                        if note['selected']:
+                            notes.remove(note)
 
         for note in notes:
             handle_event(note, event)
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = pygame.mouse.get_pos()
+            if event.button == 1:
+                if button_x <= mouse_pos[0] <= button_x + button_width and button_y <= mouse_pos[1] <= button_y + button_height:
+                    create_note()
+                elif save_button_x <= mouse_pos[0] <= save_button_x + save_button_width and save_button_y <= mouse_pos[1] <= save_button_y + save_button_height:
+                    save_notes()
+                elif load_button_x <= mouse_pos[0] <= load_button_x + load_button_width and load_button_y <= mouse_pos[1] <= load_button_y + load_button_height:
+                    load_notes()
+                elif clear_button_x <= mouse_pos[0] <= clear_button_x + clear_button_width and clear_button_y <= mouse_pos[1] <= clear_button_y + clear_button_height:
+                    notes.clear()
 
         if event.type == pygame.MOUSEMOTION:
             for note in notes:
@@ -126,10 +191,14 @@ while running:
                     note['y'] = mouse_pos[1] - note['offset'][1]
 
     screen.fill(WHITE)
+    draw_button(button_x, button_y, button_width, button_height, button_color, button_text, button_text_color)
+    draw_button(save_button_x, save_button_y, save_button_width, save_button_height, save_button_color, save_button_text, save_button_text_color)
+    draw_button(load_button_x, load_button_y, load_button_width, load_button_height, load_button_color, load_button_text, load_button_text_color)
+    draw_button(clear_button_x, clear_button_y, clear_button_width, clear_button_height, clear_button_color, clear_button_text, clear_button_text_color)
     for note in notes:
         draw_note(note)
 
     pygame.display.flip()
-    clock.tick(30)
+    clock.tick(144)
 
 pygame.quit()
