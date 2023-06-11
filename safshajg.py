@@ -7,7 +7,7 @@ pygame.init()
 pygame.init()
 screen_info = pygame.display.Info()
 WIDTH = screen_info.current_w
-HEIGHT =   screen_info.current_h
+HEIGHT = screen_info.current_h
 screen = pygame.display.set_mode((0,0),FULLSCREEN)
 
 # Set the colors
@@ -21,19 +21,24 @@ FONT_NAME = pygame.font.get_default_font()
 
 # Create a Note class
 class Note:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.width = 200
-        self.height = 200
-        self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-        self.text = ""
-        self.selected = False
-        self.dragging = False
-        self.offset_x = 0
-        self.offset_y = 0
+    pass
+    # Rest of the code...
 
-    def draw(self, screen):
+# Create a Button class
+class Button:
+    def __init__(self, x, y):
+            self.x = x
+            self.y = y
+            self.width = 200
+            self.height = 200
+            self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+            self.text = ""
+            self.selected = False
+            self.dragging = False
+            self.offset_x = 0
+            self.offset_y = 0
+
+    def createNote(self, screen):
         pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
         text_lines = self.text.split('\n')
         for i, line in enumerate(text_lines):
@@ -47,7 +52,7 @@ class Note:
                     self.text += '\n'
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
-                else:    
+                else:
                     self.text += event.unicode
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
@@ -72,30 +77,6 @@ class Note:
             pygame.mouse.set_visible(False)
         else:
             pygame.mouse.set_visible(True)
-
-# Create a Button class
-class Button:
-    def __init__(self, x, y, width, height, color, text, text_color):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.color = color
-        self.text = text
-        self.text_color = text_color
-
-    def draw(self, screen):
-        pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
-        text_surface = font.render(self.text, True, self.text_color)
-        text_x = self.x + (self.width - text_surface.get_width()) // 2
-        text_y = self.y + (self.height - text_surface.get_height()) // 2
-        screen.blit(text_surface, (text_x, text_y))
-
-    def is_clicked(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                return self.x < event.pos[0] < self.x + self.width and self.y < event.pos[1] < self.y + self.height
-        return False
 
 # Create the screen
 pygame.display.set_caption("Sticky Notes App")
@@ -146,6 +127,19 @@ while running:
 
     # Update the display
     pygame.display.flip()
+
+# Save the current state
+save_data = {
+    'notes': notes
+}
+with open('save_file.txt', 'w') as file:
+    file.write(str(save_data))
+# Load the saved state
+with open('save_file.txt', 'r') as file:
+    saved_data = file.read()
+    if saved_data:
+        save_data = eval(saved_data)
+        notes = save_data['notes']
 
 # Quit the application
 pygame.quit()
