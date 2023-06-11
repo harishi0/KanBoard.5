@@ -325,12 +325,15 @@ def run_calendar(username):
     cell_width = WINDOW_WIDTH // 7
     cell_height = (WINDOW_HEIGHT - grid_y) // 7
 
+    # Create a notes dictionary to store notes for each day
+    notes = {}
+
     # Variable to track the text input state
     input_active = False
     input_text = ""
     
     notes = load_calendar(username)
-    
+
     # Main game loop
     clock = pygame.time.Clock()
     running = True
@@ -357,7 +360,9 @@ def run_calendar(username):
                         input_text = ""
                         save_calendar(username, notes)
                 elif event.key == pygame.K_ESCAPE:
-                    pass
+                    # Save and exit the program
+                    save_calendar(username, notes)
+                    running = False
 
                 # Handle text input events
                 if input_active:
