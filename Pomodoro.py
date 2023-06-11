@@ -27,12 +27,15 @@ def run_pomodoro_timer():
                         pygame.font.Font("assets/times.ttf", 20), "#FFFFFF", "#9ab034")
     LONG_BREAK_BUTTON = Button(None, (WIDTH/2+150, HEIGHT/2-140), 120, 30, "Long Break", 
                         pygame.font.Font("assets/times.ttf", 20), "#FFFFFF", "#9ab034")
+    RESET_BUTTON = Button(None, (WIDTH/2, HEIGHT/2+200), 170, 60, "RESET", 
+                        pygame.font.Font("assets/times.ttf", 20), "#FFFFFF", "#9ab034")
 
     POMODORO_LENGTH = 1500 # 1500 secs / 25 mins
     SHORT_BREAK_LENGTH = 300 # 300 secs / 5 mins
     LONG_BREAK_LENGTH = 900 # 900 secs / 15 mins
 
     current_seconds = POMODORO_LENGTH
+    initial_seconds = POMODORO_LENGTH  # Store initial time
     pygame.time.set_timer(pygame.USEREVENT, 1000)
     started = False
 
@@ -49,13 +52,22 @@ def run_pomodoro_timer():
                         started = True
                 if POMODORO_BUTTON.check_for_input(pygame.mouse.get_pos()):
                     current_seconds = POMODORO_LENGTH
+                    initial_seconds = POMODORO_LENGTH  # Update initial time
                     started = False
                 if SHORT_BREAK_BUTTON.check_for_input(pygame.mouse.get_pos()):
                     current_seconds = SHORT_BREAK_LENGTH
+                    initial_seconds = SHORT_BREAK_LENGTH  # Update initial time
                     started = False
                 if LONG_BREAK_BUTTON.check_for_input(pygame.mouse.get_pos()):
                     current_seconds = LONG_BREAK_LENGTH
+                    initial_seconds = LONG_BREAK_LENGTH  # Update initial time
                     started = False
+                if RESET_BUTTON.check_for_input(pygame.mouse.get_pos()):  # Reset button clicked
+                    current_seconds = initial_seconds  # Reset the timer to initial value
+                    started = False
+                    START_STOP_BUTTON.text_input = "START"
+                    START_STOP_BUTTON.text = pygame.font.Font("assets/times.ttf", 20).render(
+                                            START_STOP_BUTTON.text_input, True, START_STOP_BUTTON.base_color)
                 if started:
                     START_STOP_BUTTON.text_input = "PAUSE"
                     START_STOP_BUTTON.text = pygame.font.Font("assets/times.ttf", 20).render(
@@ -81,6 +93,8 @@ def run_pomodoro_timer():
         SHORT_BREAK_BUTTON.change_color(pygame.mouse.get_pos())
         LONG_BREAK_BUTTON.update(SCREEN)
         LONG_BREAK_BUTTON.change_color(pygame.mouse.get_pos())
+        RESET_BUTTON.update(SCREEN)
+        RESET_BUTTON.change_color(pygame.mouse.get_pos())
 
         if current_seconds >= 0:
             display_seconds = current_seconds % 60
