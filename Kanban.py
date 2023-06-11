@@ -4,11 +4,10 @@ import random
 
 # Initialize Pygame
 pygame.init()
-pygame.init()
 screen_info = pygame.display.Info()
 WIDTH = screen_info.current_w
-HEIGHT =   screen_info.current_h
-screen = pygame.display.set_mode((0,0),FULLSCREEN)
+HEIGHT = screen_info.current_h
+screen = pygame.display.set_mode((0, 0), FULLSCREEN)
 
 # Set the colors
 WHITE = (255, 255, 255)
@@ -57,7 +56,7 @@ def create_note():
                         text = text[:-1]
                 else:
                     text += event.unicode
-                
+
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 if x < event.pos[0] < x + width and y < event.pos[1] < y + height:
@@ -75,14 +74,18 @@ def create_note():
             if dragging:
                 x = event.pos[0] - offset_x
                 y = event.pos[1] - offset_y
+
     def update():
-        #idk why but the code wont run without this function no matter what i do 
+        # Placeholder for future updates
         pass
 
     return {
         'draw': draw,
         'handle_event': handle_event,
-        'update': update # or this
+        'update': update,
+        'text': text,
+        'x': x,
+        'y': y
     }
 
 
@@ -124,7 +127,28 @@ button_y = 20
 button_color = GRAY
 button_text = "Create Note"
 button_text_color = BLACK
-create_button = create_button(button_x, button_y, button_width, button_height, button_color, button_text, button_text_color)
+create_button = create_button(button_x, button_y, button_width, button_height, button_color, button_text,
+                             button_text_color)
+
+# Load notes from file
+note_data = []
+try:
+    with open('notes.txt', 'r') as file:
+        for line in file:
+            note_text, note_x, note_y = line.strip().split('|')
+            note_x = int(note_x)
+            note_y = int(note_y)
+            note_data.append((note_text, note_x, note_y))
+except FileNotFoundError:
+    pass
+
+# Create note objects from loaded data
+for data in note_data:
+    new_note = create_note()
+    new_note['text'] = data[0]
+    new_note['x'] = data[1]
+    new_note['y'] = data[2]
+    notes.append(new_note)
 
 # Game loop
 running = True
@@ -156,6 +180,8 @@ while running:
 
     # Update the display
     pygame.display.flip()
+
+
 
 # Quit the application
 pygame.quit()
