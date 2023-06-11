@@ -23,10 +23,9 @@ cal = calendar.Calendar()
 
 # Create the window
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-pygame.display.set_caption("Calendar")
 
 # Current date
-current_year = pygame.time.get_ticks() // (1000 * 60 * 60 * 24 * 365) + 1970
+current_year = pygame.time.get_ticks() // (1000 * 60 * 60 * 24 * 365) + 2023
 current_month = (pygame.time.get_ticks() // (1000 * 60 * 60 * 24 * 30)) % 12 + 1
 current_day = pygame.time.get_ticks() // (1000 * 60 * 60 * 24) % 30 + 1
 
@@ -141,6 +140,12 @@ try:
 
         # Render the calendar
         cal_data = cal.monthdayscalendar(current_year, current_month)
+        
+        # Display the current month
+        year_text = font.render(str(current_year), True, BLACK)
+        year_text_width = year_text.get_width()
+        year_text_x = (WINDOW_WIDTH - year_text_width) // 1
+        window.blit(year_text, (year_text_x, grid_y - FONT_SIZE - 5))
         
         # Display the current month
         month_name = calendar.month_name[current_month]
