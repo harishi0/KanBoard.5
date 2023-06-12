@@ -27,6 +27,7 @@ BLACK = (0, 0, 0)
 GRAY = (128, 128, 128)
 
 notes = []  # List to store notes
+
 def draw_note(note):
     if note['selected']:
         pygame.draw.rect(screen, YELLOW, (note['x'] - 5, note['y'] - 5, note['width'] + 10, note['height'] + 10))
@@ -66,11 +67,11 @@ def handle_event(note, event):
         if event.button == 1:
             if note['selected']:
                 note['selected'] = False
-            elif note['x'] <= mouse_pos[0] <= note['x'] + note['width'] and note['y'] <= mouse_pos[1] <= note['y'] + note['height']:
+            elif pygame.Rect(note['x'], note['y'], note['width'], note['height']).collidepoint(mouse_pos):
                 note['selected'] = True
                 note['offset'] = (mouse_pos[0] - note['x'], mouse_pos[1] - note['y'])
         elif event.button == 3:
-            if note['x'] <= mouse_pos[0] <= note['x'] + note['width'] and note['y'] <= mouse_pos[1] <= note['y'] + note['height']:
+            if pygame.Rect(note['x'], note['y'], note['width'], note['height']).collidepoint(mouse_pos):
                 note['color'] = random.choice([RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA])
     elif event.type == pygame.KEYDOWN and note['selected']:
         if event.key == pygame.K_BACKSPACE:
@@ -82,7 +83,6 @@ def handle_event(note, event):
             note['text'] += '\n'
         else:
             note['text'] += event.unicode
-    
 
 
 def save_notes():
@@ -95,6 +95,7 @@ def save_notes():
         })
     with open('notes.json', 'w') as file:
         json.dump(data, file)
+
 
 def load_notes():
     try:
@@ -113,7 +114,8 @@ def load_notes():
                 notes.append(note)
     except FileNotFoundError:
         pass
-    
+
+
 def create_note():
     note = {
         'x': random.randint(0, WIDTH - 200),
@@ -126,12 +128,14 @@ def create_note():
     }
     notes.append(note)
 
+
 def draw_button(x, y, width, height, color, text, text_color):
     pygame.draw.rect(screen, color, (x, y, width, height))
     text_surface = font.render(text, True, text_color)
     text_x = x + (width - text_surface.get_width()) // 2
     text_y = y + (height - text_surface.get_height()) // 2
     screen.blit(text_surface, (text_x, text_y))
+
 
 def draw_kanban_board():
     num_columns = 3  # Number of Kanban board columns
@@ -163,7 +167,7 @@ button_text_color = BLACK
 # Calculate the spacing between buttons
 button_spacing = 10
 
-# Calculate the positions of the buttonszy
+# Calculate the positions of the buttons
 save_button_x = button_x - button_width - button_spacing
 clear_button_x = button_x + button_width + button_spacing
 
@@ -196,6 +200,7 @@ load_button_text_color = BLACK
 
 load_notes()
 
+
 def runkanban():
     # Main game loop
     running = True
@@ -218,13 +223,16 @@ def runkanban():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 if event.button == 1:
-                    if button_x <= mouse_pos[0] <= button_x + button_width and button_y <= mouse_pos[1] <= button_y + button_height:
+                    if pygame.Rect(button_x, button_y, button_width, button_height).collidepoint(mouse_pos):
                         create_note()
-                    elif save_button_x <= mouse_pos[0] <= save_button_x + save_button_width and save_button_y <= mouse_pos[1] <= save_button_y + save_button_height:
+                    elif pygame.Rect(save_button_x, save_button_y, save_button_width, save_button_height).collidepoint(
+                            mouse_pos):
                         save_notes()
-                    elif load_button_x <= mouse_pos[0] <= load_button_x + load_button_width and load_button_y <= mouse_pos[1] <= load_button_y + load_button_height:
+                    elif pygame.Rect(load_button_x, load_button_y, load_button_width, load_button_height).collidepoint(
+                            mouse_pos):
                         load_notes()
-                    elif clear_button_x <= mouse_pos[0] <= clear_button_x + clear_button_width and clear_button_y <= mouse_pos[1] <= clear_button_y + clear_button_height:
+                    elif pygame.Rect(clear_button_x, clear_button_y, clear_button_width, clear_button_height).collidepoint(
+                            mouse_pos):
                         notes.clear()
 
             if event.type == pygame.MOUSEMOTION:
@@ -237,13 +245,14 @@ def runkanban():
         screen.fill(WHITE)
         draw_kanban_board()
         draw_button(button_x, button_y, button_width, button_height, button_color, button_text, button_text_color)
-        draw_button(save_button_x, save_button_y, save_button_width, save_button_height, save_button_color, save_button_text, save_button_text_color)
-        draw_button(load_button_x, load_button_y, load_button_width, load_button_height, load_button_color, load_button_text, load_button_text_color)
-        draw_button(clear_button_x, clear_button_y, clear_button_width, clear_button_height, clear_button_color, clear_button_text, clear_button_text_color)
+        draw_button(save_button_x, save_button_y, save_button_width, save_button_height, save_button_color,save_button_text, save_button_text_color)
+        draw_button(load_button_x, load_button_y, load_button_width, load_button_height, load_button_color,load_button_text, load_button_text_color)
+        draw_button(clear_button_x, clear_button_y, clear_button_width, clear_button_height, clear_button_color,clear_button_text, clear_button_text_color)
         for note in notes:
             draw_note(note)
 
         pygame.display.flip()
+load_notes()
 
 runkanban()
 pygame.quit()
