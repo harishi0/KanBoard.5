@@ -381,17 +381,25 @@ def run_calendar(username):
                 if mouse_y > grid_y:
                     row = (mouse_y - grid_y) // cell_height
                     col = mouse_x // cell_width
+                    print("Row:", row)
+                    print("Col:", col)
 
                     # Get the clicked day
                     cal_data = cal.monthdayscalendar(current_year, current_month)
-                    day = cal_data[row][col]
+                    print("cal_data:", cal_data)
 
-                    if day != 0:
-                        current_day = day
+                    if row < len(cal_data) and col < len(cal_data[row]):
+                        day = cal_data[row][col]
+                        print("Clicked day:", day)
+                        
+                        if day != 0:
+                            current_day = day
 
-                        # Enable text input for the clicked day
-                        input_active = True
-                        input_text = ""
+                            # Enable text input for the clicked day
+                            input_active = True
+                            input_text = ""
+                    else:
+                        pass
 
         # Clear the screen
         screen.fill(WHITE)
