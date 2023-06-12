@@ -114,8 +114,7 @@ def update_slider_width(pos, button_choice):
 
             # Update the slider width and position
             button_choice["slider_width"] = slider_width
-            slider_pos = (button_choice["slider_width_rect"].left + int((button_choice["slider_width"] - 1) / 19 * button_choice["slider_width_rect"].width),
-                        button_choice["slider_width_rect"])
+            slider_pos = (button_choice["slider_width_rect"].left + int((button_choice["slider_width"] - 1) / 19 * button_choice["slider_width_rect"].width),button_choice["slider_width_rect"])
             button_choice["slider_pos"] = slider_pos
 
             # Perform any additional actions based on the updated slider width
@@ -476,13 +475,14 @@ def run_pomodoro_timer(username):
     
     WIDTH, HEIGHT = screen.get_size()
 
-    BACKDROP = pygame.image.load("assets/Backdrop1.png")
-    WHITE_BUTTON = pygame.image.load("assets/button.png")
+    BACKDROP = pygame.image.load("assets/Backdrop1.png")#grabs the png file and makes it the backround
+    WHITE_BUTTON = pygame.image.load("assets/button.png")# grabs the png file and loads it as the button
 
-    FONT = pygame.font.Font("assets/times.ttf", 120)
-    timer_text = FONT.render("25:00", True, "white")
-    timer_text_rect = timer_text.get_rect(center=(WIDTH/2, HEIGHT/2-25))
+    FONT = pygame.font.Font("assets/times.ttf", 120)#The font type from a ttf file and sets the size
+    timer_text = FONT.render("25:00", True, "white")#Time displayed and color it is displayed in
+    timer_text_rect = timer_text.get_rect(center=(WIDTH/2, HEIGHT/2-25))# Sets the position fo the button and how it can react
 
+# Create buttons
     startStopButton = Button(WHITE_BUTTON, (WIDTH/2, HEIGHT/2+100), 170, 60, "START", 
                         pygame.font.Font("assets/times.ttf", 20), "#c97676", "#9ab034")
     workSeshbutton = Button(None, (WIDTH/2-150, HEIGHT/2-140), 120, 30, "Work Session", 
@@ -500,11 +500,11 @@ def run_pomodoro_timer(username):
                         pygame.font.Font("assets/times.ttf", 20), "#c97676", "#9ab034")
 
     current_seconds = workSession
-    pygame.time.set_timer(pygame.USEREVENT, 1000)
-    started = False
+    pygame.time.set_timer(pygame.USEREVENT, 1000)# Updates the timer every 1000ms = 1s so that the timer can count down and react to button clicks
+    started = False #Set so that the timer starts in a paused state
 
     while True:
-        for event in pygame.event.get():
+        for event in pygame.event.get():# The list of events like mouse clicks and movement
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
@@ -542,6 +542,7 @@ def run_pomodoro_timer(username):
         screen.fill((0, 0, 0))
         screen.blit(BACKDROP, BACKDROP.get_rect(center=(WIDTH/2, HEIGHT/2)))
 
+# Update and change color of buttons
         startStopButton.update(screen)
         startStopButton.change_color(pygame.mouse.get_pos())
         workSeshbutton.update(screen)
