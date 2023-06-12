@@ -33,7 +33,6 @@ background_color = WHITE
 
 screen = pygame.display.set_mode((0, 0), FULLSCREEN)
 
-
 #Whiteboard Section
 
 def mouse_button_action(pos, button_choice, username):
