@@ -2,8 +2,9 @@ import pygame
 from pygame.locals import *
 import random
 import json
+
 def run_kanban_main():
-# Initialize Pygame
+    # Initialize Pygame
     pygame.init()
     screen_info = pygame.display.Info()
     WIDTH = screen_info.current_w
@@ -251,7 +252,20 @@ def run_kanban_main():
             for note in notes:
                 draw_note(note)
 
+            # Define the text properties
+            how_delete_note_font = pygame.font.Font(None, 20)
+            how_delete_note_text = how_delete_note_font.render("Press Control + Backspace to delete a note", True, BLACK)
+            how_delete_note_rect = how_delete_note_text.get_rect(top=10, left=10)
+
+            # Blit the text onto the screen
+            screen.blit(how_delete_note_text, how_delete_note_rect)
+
             pygame.display.flip()
+            clock.tick(60)
+
+
     runkanban()
+    pygame.quit()
+
+
 run_kanban_main()
-pygame.quit()
