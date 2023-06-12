@@ -27,38 +27,33 @@ BLACK = (0, 0, 0)
 GRAY = (128, 128, 128)
 
 notes = []  # List to store notes
-
 def draw_note(note):
     if note['selected']:
         pygame.draw.rect(screen, YELLOW, (note['x'] - 5, note['y'] - 5, note['width'] + 10, note['height'] + 10))
     pygame.draw.rect(screen, note['color'], (note['x'], note['y'], note['width'], note['height']))
-    #text wrapping stolen from chat gpt
+
+    lines = note['text'].split('\n')
     text_lines = []
-    words = note['text'].split(' ')
-    
-    current_line = ''
-    for word in words:
-        test_line = current_line + word + ' '
-        if font.size(test_line)[0] <= note['width'] - 20:
-            current_line = test_line
-        else:
-            if current_line:
-                text_lines.append(current_line)
-            current_line = ''
-            while font.size(word)[0] > note['width'] - 20:
-                word = word[:-1]
-                if not word:
-                    break
-            text_lines.append(word + ' ')
-    
-    if current_line:
-        text_lines.append(current_line)
-    
+
+    for line in lines:
+        words = line.split(' ')
+        current_line = ''
+        for word in words:
+            test_line = current_line + word + ' '
+            if font.size(test_line)[0] <= note['width'] - 20:
+                current_line = test_line
+            else:
+                if current_line:
+                    text_lines.append(current_line)
+                current_line = word + ' '
+        if current_line:
+            text_lines.append(current_line)
+
     for i, line in enumerate(text_lines):
         text_surface = font.render(line, True, BLACK)
         text_x = note['x'] + 10
         text_y = note['y'] + 10 + (i * FONT_SIZE)
-        
+
         if text_y + FONT_SIZE <= note['y'] + note['height'] - 10:
             screen.blit(text_surface, (text_x, text_y))
         else:
