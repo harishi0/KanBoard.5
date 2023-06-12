@@ -523,21 +523,21 @@ def run_pomodoro_timer(username):
                 if longBreakButton.check_for_input(pygame.mouse.get_pos()):
                     current_seconds = longBreak
                     started = False
+                if backButton.check_for_input(pygame.mouse.get_pos()):
+                    menu_buttons(username)
                 if started:
                     startStopButton.text_input = "PAUSE"
                     startStopButton.text = pygame.font.Font("assets/times.ttf", 20).render(
-                                            startStopButton.text_input, True, startStopButton.base_color)
-                if backButton.check_for_input(pygame.mouse.get_pos()):
-                    menu_buttons(username)
+                        startStopButton.text_input, True, startStopButton.base_color)
                 else:
                     startStopButton.text_input = "START"
                     startStopButton.text = pygame.font.Font("assets/times.ttf", 20).render(
-                                            startStopButton.text_input, True, startStopButton.base_color)
+                        startStopButton.text_input, True, startStopButton.base_color)
             if event.type == pygame.USEREVENT and started:
                 current_seconds -= 1
                 if current_seconds <= 0:
                     started = False
-                    subprocess.Popen(["python", "-c", "import winsound; winsound.Beep(440, 5000)"])  # Play the beep sound
+                    subprocess.Popen(["python", "-c", "import winsound; winsound.Beep(440, 4000)"])  # Play the beep sound
 
         screen.fill((0, 0, 0))
         screen.blit(BACKDROP, BACKDROP.get_rect(center=(WIDTH/2, HEIGHT/2)))
