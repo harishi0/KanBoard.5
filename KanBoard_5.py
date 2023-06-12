@@ -483,23 +483,23 @@ def run_pomodoro_timer(username):
     timer_text = FONT.render("25:00", True, "white")
     timer_text_rect = timer_text.get_rect(center=(WIDTH/2, HEIGHT/2-25))
 
-    START_STOP_BUTTON = Button(WHITE_BUTTON, (WIDTH/2, HEIGHT/2+100), 170, 60, "START", 
+    startStopButton = Button(WHITE_BUTTON, (WIDTH/2, HEIGHT/2+100), 170, 60, "START", 
                         pygame.font.Font("assets/times.ttf", 20), "#c97676", "#9ab034")
-    POMODORO_BUTTON = Button(None, (WIDTH/2-150, HEIGHT/2-140), 120, 30, "Work Session", 
+    workSeshbutton = Button(None, (WIDTH/2-150, HEIGHT/2-140), 120, 30, "Work Session", 
                         pygame.font.Font("assets/times.ttf", 20), "#FFFFFF", "#9ab034")
-    SHORT_BREAK_BUTTON = Button(None, (WIDTH/2, HEIGHT/2-140), 120, 30, "Short Break", 
+    shortBreakButton = Button(None, (WIDTH/2, HEIGHT/2-140), 120, 30, "Short Break", 
                         pygame.font.Font("assets/times.ttf", 20), "#FFFFFF", "#9ab034")
-    LONG_BREAK_BUTTON = Button(None, (WIDTH/2+150, HEIGHT/2-140), 120, 30, "Long Break", 
+    longBreakButton = Button(None, (WIDTH/2+150, HEIGHT/2-140), 120, 30, "Long Break", 
                         pygame.font.Font("assets/times.ttf", 20), "#FFFFFF", "#9ab034")
 
-    POMODORO_LENGTH = 1500 # 1500 secs / 25 mins
-    SHORT_BREAK_LENGTH = 300 # 300 secs / 5 mins
-    LONG_BREAK_LENGTH = 900 # 900 secs / 15 mins
+    workSession = 1500  # 1500 secs / 25 mins
+    shortBreak = 300  # 300 secs / 5 mins
+    longBreak = 900  # 900 secs / 15 mins
     
-    BACK_BUTTON = Button(WHITE_BUTTON, (WIDTH/2, HEIGHT/2+180), 170, 60, "BACK", 
+    backButton = Button(WHITE_BUTTON, (WIDTH/2, HEIGHT/2+180), 170, 60, "BACK", 
                         pygame.font.Font("assets/times.ttf", 20), "#c97676", "#9ab034")
 
-    current_seconds = POMODORO_LENGTH
+    current_seconds = workSession
     pygame.time.set_timer(pygame.USEREVENT, 1000)
     started = False
 
@@ -509,30 +509,30 @@ def run_pomodoro_timer(username):
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if START_STOP_BUTTON.check_for_input(pygame.mouse.get_pos()):
+                if startStopButton.check_for_input(pygame.mouse.get_pos()):
                     if started:
                         started = False
                     else:
                         started = True
-                if POMODORO_BUTTON.check_for_input(pygame.mouse.get_pos()):
-                    current_seconds = POMODORO_LENGTH
+                if workSeshbutton.check_for_input(pygame.mouse.get_pos()):
+                    current_seconds = workSession
                     started = False
-                if SHORT_BREAK_BUTTON.check_for_input(pygame.mouse.get_pos()):
-                    current_seconds = SHORT_BREAK_LENGTH
+                if shortBreakButton.check_for_input(pygame.mouse.get_pos()):
+                    current_seconds = shortBreak
                     started = False
-                if LONG_BREAK_BUTTON.check_for_input(pygame.mouse.get_pos()):
-                    current_seconds = LONG_BREAK_LENGTH
+                if longBreakButton.check_for_input(pygame.mouse.get_pos()):
+                    current_seconds = longBreak
                     started = False
                 if started:
-                    START_STOP_BUTTON.text_input = "PAUSE"
-                    START_STOP_BUTTON.text = pygame.font.Font("assets/times.ttf", 20).render(
-                                            START_STOP_BUTTON.text_input, True, START_STOP_BUTTON.base_color)
-                if BACK_BUTTON.check_for_input(pygame.mouse.get_pos()):
+                    startStopButton.text_input = "PAUSE"
+                    startStopButton.text = pygame.font.Font("assets/times.ttf", 20).render(
+                                            startStopButton.text_input, True, startStopButton.base_color)
+                if backButton.check_for_input(pygame.mouse.get_pos()):
                     menu_buttons(username)
                 else:
-                    START_STOP_BUTTON.text_input = "START"
-                    START_STOP_BUTTON.text = pygame.font.Font("assets/times.ttf", 20).render(
-                                            START_STOP_BUTTON.text_input, True, START_STOP_BUTTON.base_color)
+                    startStopButton.text_input = "START"
+                    startStopButton.text = pygame.font.Font("assets/times.ttf", 20).render(
+                                            startStopButton.text_input, True, startStopButton.base_color)
             if event.type == pygame.USEREVENT and started:
                 current_seconds -= 1
                 if current_seconds <= 0:
@@ -542,16 +542,16 @@ def run_pomodoro_timer(username):
         screen.fill((0, 0, 0))
         screen.blit(BACKDROP, BACKDROP.get_rect(center=(WIDTH/2, HEIGHT/2)))
 
-        START_STOP_BUTTON.update(screen)
-        START_STOP_BUTTON.change_color(pygame.mouse.get_pos())
-        POMODORO_BUTTON.update(screen)
-        POMODORO_BUTTON.change_color(pygame.mouse.get_pos())
-        SHORT_BREAK_BUTTON.update(screen)
-        SHORT_BREAK_BUTTON.change_color(pygame.mouse.get_pos())
-        LONG_BREAK_BUTTON.update(screen)
-        LONG_BREAK_BUTTON.change_color(pygame.mouse.get_pos())
-        BACK_BUTTON.update(screen)
-        BACK_BUTTON.change_color(pygame.mouse.get_pos())
+        startStopButton.update(screen)
+        startStopButton.change_color(pygame.mouse.get_pos())
+        workSeshbutton.update(screen)
+        workSeshbutton.change_color(pygame.mouse.get_pos())
+        shortBreakButton.update(screen)
+        shortBreakButton.change_color(pygame.mouse.get_pos())
+        longBreakButton.update(screen)
+        longBreakButton.change_color(pygame.mouse.get_pos())
+        backButton.update(screen)
+        backButton.change_color(pygame.mouse.get_pos())
 
         if current_seconds >= 0:
             display_seconds = current_seconds % 60
