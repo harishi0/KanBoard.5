@@ -4,6 +4,9 @@ from button import Button
 import subprocess
 
 def run_pomodoro_timer():
+    '''
+    Sets the width and hight of the timer
+    '''
     pygame.init()
 
     WIDTH, HEIGHT = 900, 600
