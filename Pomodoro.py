@@ -15,24 +15,24 @@ def run_pomodoro_timer():
 
     CLOCK = pygame.time.Clock()#creates a Clock object from the pygame.time module
 
-    backroundColor = pygame.image.load("assets/Backdrop1.png") #grabs the png file and makes it the backround
-    WHITE_BUTTON = pygame.image.load("assets/button.png") # grabs the png file and loads it as the button
+    backroundColor = pygame.image.load("Components/Backdrop1.png") #grabs the png file and makes it the backround
+    WHITE_BUTTON = pygame.image.load("Components/button.png") # grabs the png file and loads it as the button
 
-    textfont = pygame.font.Font("assets/times.ttf", 150)#The font type from a ttf file and sets the size
+    textfont = pygame.font.Font("Components/times.ttf", 150)#The font type from a ttf file and sets the size
     timer_text = textfont.render("25:00", True, "white") #Time displayed and color it is displayed in
     timer_text_rect = timer_text.get_rect(center=(width/2, height/2-25))# Sets the position fo the button and how it can react
 
     # Create buttons
     startStopButton = Button(WHITE_BUTTON, (width/2, height/2+100), 170, 60, "START",
-                             pygame.font.Font("assets/times.ttf", 20), "#c97676", "#9ab034") #Grabs the font and assigns colors based on when it is clicked
+                             pygame.font.Font("Components/times.ttf", 20), "#c97676", "#9ab034") #Grabs the font and assigns colors based on when it is clicked
     workSeshbutton = Button(None, (width/2-150, height/2-140), 120, 30, "Work Session",
-                            pygame.font.Font("assets/times.ttf", 20), "#FFFFFF", "#9ab034")
+                            pygame.font.Font("Components/times.ttf", 20), "#FFFFFF", "#9ab034")
     shortBreakButton = Button(None, (width/2, height/2-140), 120, 30, "Short Break",
-                              pygame.font.Font("assets/times.ttf", 20), "#FFFFFF", "#9ab034")
+                              pygame.font.Font("Components/times.ttf", 20), "#FFFFFF", "#9ab034")
     longBreakButton = Button(None, (width/2+150, height/2-140), 120, 30, "Long Break",
-                             pygame.font.Font("assets/times.ttf", 20), "#FFFFFF", "#9ab034")
+                             pygame.font.Font("Components/times.ttf", 20), "#FFFFFF", "#9ab034")
     resetButton = Button(None, (width/2, height/2+200), 170, 60, "RESET",
-                         pygame.font.Font("assets/times.ttf", 20), "#FFFFFF", "#9ab034")
+                         pygame.font.Font("Components/times.ttf", 20), "#FFFFFF", "#9ab034")
 
     workSession = 1500  # 1500 secs / 25 mins
     shortBreak = 300  # 300 secs / 5 mins
@@ -71,15 +71,15 @@ def run_pomodoro_timer():
                     current_seconds = initial_seconds  # Reset the timer to initial value
                     started = False
                     startStopButton.text_input = "START"
-                    startStopButton.text = pygame.font.Font("assets/times.ttf", 20).render(
+                    startStopButton.text = pygame.font.Font("Components/times.ttf", 20).render(
                         startStopButton.text_input, True, startStopButton.base_color)
                 if started:
                     startStopButton.text_input = "PAUSE"
-                    startStopButton.text = pygame.font.Font("assets/times.ttf", 20).render(
+                    startStopButton.text = pygame.font.Font("Components/times.ttf", 20).render(
                         startStopButton.text_input, True, startStopButton.base_color)
                 else:
                     startStopButton.text_input = "START"
-                    startStopButton.text = pygame.font.Font("assets/times.ttf", 20).render(
+                    startStopButton.text = pygame.font.Font("Components/times.ttf", 20).render(
                         startStopButton.text_input, True, startStopButton.base_color)
             if event.type == pygame.USEREVENT and started:
                 current_seconds -= 1
