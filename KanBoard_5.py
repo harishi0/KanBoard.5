@@ -1,3 +1,5 @@
+#Imports
+
 import pygame
 from pygame.locals import *
 import os
@@ -9,9 +11,15 @@ from button import Button
 import subprocess
 import calendar
 
+#Initialize pygame
+
 pygame.init()
 
+#Set caption of the pygame application
+
 pygame.display.set_caption('KanBoard.5')
+
+#Set color values as tuple
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -21,9 +29,10 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 background_color = WHITE
 
-max_length_login_signup = 12
+#Set the screen variable to full screen to be used throughout the code
 
 screen = pygame.display.set_mode((0, 0), FULLSCREEN)
+
 
 #Whiteboard Section
 
@@ -295,15 +304,7 @@ def load_calendar(username):
     return notes  # Return the notes dictionary
 
 def run_calendar(username):
-    # Set window dimensions
-    WINDOW_WIDTH = 800
-    WINDOW_HEIGHT = 600
-
-    # Set colors
-    BLACK = (0, 0, 0)
-    WHITE = (255, 255, 255)
-    RED = (255, 0, 0)
-    GREEN = (0, 255, 0)
+    WIDTH, HEIGHT = screen.get_size()
 
     # Set font
     FONT_SIZE = 24
@@ -311,9 +312,6 @@ def run_calendar(username):
 
     # Create a calendar
     cal = calendar.Calendar()
-
-    # Create the window
-    window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
     # Current date
     current_year = pygame.time.get_ticks() // (1000 * 60 * 60 * 24 * 365) + 2023
@@ -323,8 +321,8 @@ def run_calendar(username):
     # Calculate the position of the calendar grid
     grid_x = 0
     grid_y = FONT_SIZE + 10
-    cell_width = WINDOW_WIDTH // 7
-    cell_height = (WINDOW_HEIGHT - grid_y) // 7
+    cell_width = WIDTH // 7
+    cell_height = (HEIGHT - grid_y) // 7
 
     # Create a notes dictionary to store notes for each day
     notes = {}
@@ -362,9 +360,7 @@ def run_calendar(username):
                         input_text = ""
                         save_calendar(username, notes)
                 elif event.key == pygame.K_ESCAPE:
-                    # Save and exit the program
-                    save_calendar(username, notes)
-                    running = False
+                    pass
 
                 # Handle text input events
                 if input_active:
@@ -380,6 +376,8 @@ def run_calendar(username):
             # Check for mouse button click
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 # Check if the click is inside the calendar grid
+                if back_button_rect.collidepoint(event.pos):
+                    menu_buttons(username) 
                 mouse_x, mouse_y = event.pos
                 if mouse_y > grid_y:
                     row = (mouse_y - grid_y) // cell_height
@@ -396,8 +394,8 @@ def run_calendar(username):
                         input_active = True
                         input_text = ""
 
-        # Clear the window
-        window.fill(WHITE)
+        # Clear the screen
+        screen.fill(WHITE)
 
         # Render the calendar
         cal_data = cal.monthdayscalendar(current_year, current_month)
@@ -405,21 +403,21 @@ def run_calendar(username):
         # Display the current month
         year_text = font.render(str(current_year), True, BLACK)
         year_text_width = year_text.get_width()
-        year_text_x = (WINDOW_WIDTH - year_text_width) // 1
-        window.blit(year_text, (year_text_x, grid_y - FONT_SIZE - 5))
+        year_text_x = (WIDTH - year_text_width) // 1
+        screen.blit(year_text, (year_text_x, grid_y - FONT_SIZE - 5))
 
         # Display the current month
         month_name = calendar.month_name[current_month]
         month_text = font.render(month_name, True, BLACK)
         month_text_width = month_text.get_width()
-        month_text_x = (WINDOW_WIDTH - month_text_width) // 2
-        window.blit(month_text, (month_text_x, grid_y - FONT_SIZE - 5))
+        month_text_x = (WIDTH - month_text_width) // 2
+        screen.blit(month_text, (month_text_x, grid_y - FONT_SIZE - 5))
 
         # Display the days of the week
         days_of_week = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
         for i, day in enumerate(days_of_week):
             text_surface = font.render(day, True, BLACK)
-            window.blit(text_surface, (i * cell_width, grid_y - FONT_SIZE + 10))
+            screen.blit(text_surface, (i * cell_width, grid_y - FONT_SIZE + 10))
 
         # Display the calendar days
         for i, week in enumerate(cal_data):
@@ -429,20 +427,33 @@ def run_calendar(username):
 
                     # Highlight the current day
                     if day == current_day:
-                        pygame.draw.rect(window, RED, (j * cell_width, grid_y + i * cell_height, cell_width, cell_height))
+                        pygame.draw.rect(screen, RED, (j * cell_width, grid_y + i * cell_height, cell_width, cell_height))
 
-                    window.blit(text_surface, (j * cell_width, grid_y + i * cell_height))
+                    screen.blit(text_surface, (j * cell_width, grid_y + i * cell_height))
 
                     # Display saved notes for each day
                     if (current_year, current_month, day) in notes:
                         note_text = notes[(current_year, current_month, day)]
                         note_surface = font.render(note_text, True, GREEN)
-                        window.blit(note_surface, (j * cell_width, grid_y + i * cell_height + FONT_SIZE))
+                        screen.blit(note_surface, (j * cell_width, grid_y + i * cell_height + FONT_SIZE))
 
         # Display the input text
         input_surface = font.render(input_text, True, BLACK)
-        window.blit(input_surface, (cell_width, WINDOW_HEIGHT - FONT_SIZE))
-
+        screen.blit(input_surface, (cell_width, HEIGHT - FONT_SIZE))
+        
+        # Draw back button
+        BACK_BUTTON_WIDTH = 100
+        BACK_BUTTON_HEIGHT = 40
+        back_button_x = (WIDTH - BACK_BUTTON_WIDTH) // 2
+        back_button_y = HEIGHT - BACK_BUTTON_HEIGHT - 10
+        back_button_rect = pygame.Rect(back_button_x, back_button_y, BACK_BUTTON_WIDTH, BACK_BUTTON_HEIGHT)
+        back_button_color = BLACK
+        pygame.draw.rect(screen, back_button_color, back_button_rect)
+        back_button_font = pygame.font.Font(None, 24)
+        back_button_text_rendered = back_button_font.render("Back", True, WHITE)
+        back_button_text_rect = back_button_text_rendered.get_rect(center=back_button_rect.center)
+        screen.blit(back_button_text_rendered, back_button_text_rect)
+        
         # Update the display
         pygame.display.flip()
 
@@ -615,8 +626,10 @@ def menu_buttons(username):
 
 #Login Section
 
-def login():
+max_length_login_signup = 12
 
+def login():
+    
     # Set up the screen
     screen_width, screen_height = pygame.display.get_surface().get_size()
 
@@ -832,21 +845,25 @@ def signup():
                     folder = os.getcwd()
                     file_name = folder + "\\accounts.csv"
                     with open(file_name, "r") as csv_file:
-                        reader = csv.reader(csv_file, delimiter=',')
-                        login_validity = False 
-                        for line in reader:
+                        reader = csv.reader(csv_file)
+                        for row in reader:
                             if signup_username == "" or signup_password == "":
                                 invalid_signup_text = "Invalid username or password"
-                            elif signup_username == line[0] and signup_password == line[1]:
-                                print("Account Created")
-                                login_validity = True
-                                invalid_signup_text = ""
-                                user_folder = os.path.join("user_data")
-                                if not os.path.exists(user_folder):
-                                    os.makedirs(user_folder)
-                                menu_buttons(signup_username)
-                            if not login_validity:
-                                invalid_signup_text = "Invalid username or password"
+                                break
+                            elif signup_username in row:
+                                invalid_signup_text = "Username already taken"
+                                break
+                            else:
+                                # Append the new username and password on a new row
+                                with open(file_name, "a", newline="") as csv_file:
+                                    csv_file.write("\n" + signup_username + "," + signup_password)
+                                confirm_signup_font = pygame.font.Font(None, 36)
+                                confirm_signup_text = confirm_signup_font.render("Account created", True, GREEN)
+                                confirm_signup_text_rect = confirm_signup_text.get_rect(center=screen.get_rect().center)
+                                screen.blit(confirm_signup_text, confirm_signup_text_rect, screen.fill(WHITE))
+                                pygame.display.flip()
+                                pygame.time.wait(1 * 1000)
+                                login()
                 else:
                     if signup_active_field == "signup_username":
                         if len(signup_username) < max_length_login_signup:
@@ -888,8 +905,7 @@ def signup():
                                 pygame.time.wait(1 * 1000)
                                 login()
                 elif back_signup_button.collidepoint(mouse_pos):
-                    login()
-                    
+                    login() 
         screen.fill(WHITE)
                     
         # Draw title
@@ -948,7 +964,5 @@ def signup():
         clock.tick(60)
 
     pygame.quit()
-
-
 if __name__ == '__main__':
     login()
