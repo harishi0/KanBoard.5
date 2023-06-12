@@ -1,3 +1,5 @@
+#Imports
+
 import pygame
 from pygame.locals import *
 import os
@@ -9,9 +11,15 @@ from button import Button
 import subprocess
 import calendar
 
+#Initialize pygame
+
 pygame.init()
 
+#Set caption of the pygame application
+
 pygame.display.set_caption('KanBoard.5')
+
+#Set color values as tuple
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -21,9 +29,10 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 background_color = WHITE
 
-max_length_login_signup = 12
+#Set the screen variable to full screen to be used throughout the code
 
 screen = pygame.display.set_mode((0, 0), FULLSCREEN)
+
 
 #Whiteboard Section
 
@@ -617,8 +626,10 @@ def menu_buttons(username):
 
 #Login Section
 
-def login():
+max_length_login_signup = 12
 
+def login():
+    
     # Set up the screen
     screen_width, screen_height = pygame.display.get_surface().get_size()
 
