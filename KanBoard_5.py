@@ -365,10 +365,13 @@ def run_kanban_main(username):
                 note['text'] += event.unicode
 
 
-    def save_notes():
+    def save_notes(username):
         """
-        Saves the notes to a JSON file.
+        Saves the notes to a JSON file for the given username.
         """
+        folder_path = os.path.join("user_data", username)
+        os.makedirs(folder_path, exist_ok=True)
+        file_name = os.path.join(folder_path, "notes.json")
         data = []
         for note in notes:
             data.append({
@@ -376,31 +379,37 @@ def run_kanban_main(username):
                 'y': note['y'],
                 'text': note['text']
             })
-        with open('notes.json', 'w') as file:
+        with open(file_name, 'w') as file:
             json.dump(data, file)
 
 
-    def load_notes():
+    def load_notes(username):
         '''
-        Loads the notes from a JSON file.
+        Loads the notes from a JSON file for the given username.
         '''
+        folder_path = os.path.join("user_data", username)
+        file_name = os.path.join(folder_path, "notes.json")
         try:
-            with open('notes.json', 'r') as file:
-                data = json.load(file)
-                for note_data in data:
-                    note = {
-                        'x': note_data['x'],
-                        'y': note_data['y'],
-                        'width': 200,
-                        'height': 200,
-                        'color': random.choice([RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA]),
-                        'selected': False,
-                        'text': note_data['text']
-                    }
-                    notes.append(note)
+            if os.path.exists(file_name):
+                with open(file_name, 'r') as file:
+                    data = json.load(file)
+                    for note_data in data:
+                        note = {
+                            'x': note_data['x'],
+                            'y': note_data['y'],
+                            'width': 200,
+                            'height': 200,
+                            'color': random.choice([RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA]),
+                            'selected': False,
+                            'text': note_data['text']
+                        }
+                        notes.append(note)
+            else:
+                # Create an empty file if it doesn't exist
+                with open(file_name, 'w') as file:
+                    pass
         except FileNotFoundError:
             pass
-
 
     def create_note():
         """
@@ -590,7 +599,7 @@ def run_kanban_main(username):
 
             pygame.display.flip()
             clock.tick(60)
-    load_notes()
+    load_notes(username)
     runkanban(username)
 
     
