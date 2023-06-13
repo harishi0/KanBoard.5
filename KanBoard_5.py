@@ -392,10 +392,7 @@ def run_kanban_main(username):
                 note['text'] += event.unicode
 
 
-    def save_notes():
-        """
-        Saves the notes to a JSON file.
-        """
+    def save_notes(username):
         data = []
         for note in notes:
             data.append({
@@ -403,16 +400,23 @@ def run_kanban_main(username):
                 'y': note['y'],
                 'text': note['text']
             })
-        with open('notes.json', 'w') as file:
+
+        # Create the "user_data" folder if it doesn't exist
+        folder_path = "user_data"
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+
+        # Save the notes to a JSON file
+        file_path = os.path.join(folder_path, f"{username}_kanban.json")
+        with open(file_path, 'w') as file:
             json.dump(data, file)
 
 
-    def load_notes():
-        '''
-        Loads the notes from a JSON file.
-        '''
+    def load_notes(username):
+ 
+        file_path = os.path.join('user_data', f'{username}_kanban.json')
         try:
-            with open('notes.json', 'r') as file:
+            with open(file_path, 'r') as file:
                 data = json.load(file)
                 for note_data in data:
                     note = {
@@ -427,6 +431,7 @@ def run_kanban_main(username):
                     notes.append(note)
         except FileNotFoundError:
             pass
+
 
     def create_note():
         """
