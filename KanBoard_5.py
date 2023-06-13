@@ -276,7 +276,7 @@ def run_whiteboard(username):
 
 #Kanban Section
 
-def run_kanban_main():
+def run_kanban_main(username):
     """
     Runs the main Kanban application.
     """
@@ -519,7 +519,7 @@ def run_kanban_main():
     
 
 
-    def runkanban():
+    def runkanban(username):
         # Main game loop
         """
         Runs the Kanban board application.
@@ -591,7 +591,7 @@ def run_kanban_main():
             pygame.display.flip()
             clock.tick(60)
     load_notes()
-    runkanban()
+    runkanban(username)
 
     
 # Calendar Section
@@ -907,7 +907,7 @@ def menu_button_action(label, username):
         run_whiteboard(username)
     elif label == "Kanban Board":
         print("Kanban Board button clicked")
-        run_kanban_main()
+        run_kanban_main(username)
     elif label == "Calendar":
         print("Calendar button clicked")
         run_calendar(username)
