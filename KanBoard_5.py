@@ -472,6 +472,12 @@ def run_calendar(username):
 #Timer Section
 
 def run_pomodoro_timer(username):
+    '''
+    Run the Pomodoro timer.
+
+    Args:
+        username (str): The username of the user.
+    '''
     
     WIDTH, HEIGHT = screen.get_size()
 
