@@ -3,6 +3,7 @@
 #Calendar done by Zhiqian Zou
 #Timer done by Isa Jamal
 
+
 #Imports
 
 import pygame
@@ -35,15 +36,12 @@ BLUE = (0, 191, 255)
 GREY = (220, 220, 220)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
-# Define colors
-WHITE = (255, 255, 255)
 YELLOW = (255, 255, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 CYAN = (0, 255, 255)
 MAGENTA = (255, 0, 255)
 BLACK = (0, 0, 0)
-GRAY = (128, 128, 128)
 background_color = WHITE
 
 #Set the screen variable to full screen to be used throughout the code
@@ -55,7 +53,7 @@ screen = pygame.display.set_mode((0, 0), FULLSCREEN)
 
 def mouse_button_action(pos, button_choice, username):
     '''
-        Functionality for what every button press does in the whiteboard
+        Functionality for what every button press does in the whiteboard.
         Parameter: pos gets the cursor position on the whiteboard
         Parameter: button_choice is a dictionary called which has the current states of the buttons that are controlled by the position of the mouse
         Parameter: username is to determine which user is using the whiteboard
@@ -75,7 +73,7 @@ def mouse_button_action(pos, button_choice, username):
     
     #Calls function to set up drawing on whiteboard
     drawing(pos, button_choice)
-
+    
     #If statements determining whiteboard functionality based on what button is selected
     if button_choice["black"]:
         button_choice["color"] = BLACK
@@ -96,7 +94,7 @@ def mouse_button_action(pos, button_choice, username):
 
 def whiteboard_back_button_action(username):
     '''
-    Functionality for back button on whiteboard screen to return to the menu page
+    Functionality for back button on whiteboard screen to return to the menu page.
     Parameter: username is to determine which user is using the whiteboard
     Return: N/A
     '''
@@ -106,22 +104,39 @@ def whiteboard_back_button_action(username):
 
 def drawing(pos, button_choice):
     '''
-    Set up the drawing portion of the whiteboard before the actual drawing commences by getting the starting position of the cursor 
+    Set up the drawing portion of the whiteboard before the actual drawing commences by getting the starting position of the cursor.
     Parameter: pos gets the starting cursor position of the whiteboard
     Parameter: button_choice determines which button is selected 
     Return: N/A
     '''
+    
     button_choice["drawing"] = True
     button_choice["last_pos"] = pos
 
 def slider_motion(pos, button_choice):
+    '''
+    Set slider motion so that when it gets dragged, the function to change the width of the drawing gets called and when using slider, drawing cannot happen.
+    Parameter: pos gets cursor position of the whiteboard
+    Parameter: button_choice gets which button is selected 
+    Return: N/A
+    '''
+    
+    #If statements for whether the slider is dragging or not
     if button_choice["drag_slider"]:
         update_slider_width(pos, button_choice)
-
-    if button_choice["drawing"] and not button_choice["drag_slider"]:  # Add a check for "drag_slider"
+    if button_choice["drawing"] and not button_choice["drag_slider"]:  
         draw(pos, button_choice)
 
 def draw(pos, button_choice):
+    '''
+    Uses mouse cursor positions to and drawing distance to calculate drawing x and y points and using circles to iterate the drawing for smoother lines. Function first checks whether drawing is selected 
+    and if so, it proceeds to calculate drawing. Then the for loop iterates it as many times as the drawing distance.
+    Parameter: pos gets cursor position to calculate x and y coordinates to draw on whiteboard
+    Parameter: button_choice to select color or tool when drawing
+    Return: N/A
+    '''
+    
+    #Calculate drawing x and y coordinates
     if button_choice["drawing"]:
         color = button_choice["color"]
         last_pos = button_choice["last_pos"]
@@ -131,6 +146,7 @@ def draw(pos, button_choice):
         step_x = drawing_distance_x / drawing_distance if drawing_distance != 0 else 0
         step_y = drawing_distance_y / drawing_distance if drawing_distance != 0 else 0
 
+        #Iterate the drawing through a for loop
         for i in range(drawing_distance):
             x = int(last_pos[0] + i * step_x)
             y = int(last_pos[1] + i * step_y)
@@ -139,30 +155,54 @@ def draw(pos, button_choice):
         button_choice["last_pos"] = pos
 
 def clear_whiteboard(whiteboard):
+    '''
+    Clear functionality which resets whiteboard background to what ever the background color is.
+    Parameter: whiteboard is the screen display which is set to full screen
+    Return: N/A
+    '''
     whiteboard.fill(background_color)
 
 def update_slider_width(pos, button_choice):
+    '''
+    Updates slider width so that thickness of drawing changes based on users slider selection. Maximum slider with is 20 while minimum is 5.
+    Parameter: pos gets cursor position of the white board to see if the slider is being dragged
+    Parameter: button_choice gets button functionality when buttons are selected
+    Return: N/A
+    '''
+    
+    #Checks if slider is being dragged
     if button_choice["drag_slider"]:
+        #Checks if the cursor is in the confines of the slider
         if button_choice["slider_width_rect"].left <= pos[0] <= button_choice["slider_width_rect"].right:
             # Calculate the new slider width based on the mouse position
             slider_width = int((pos[0] - button_choice["slider_width_rect"].left) / button_choice["slider_width_rect"].width * 19) + 1
-            # Limit the slider width to a minimum value of 1
+            #Limit the slider width to a minimum value of 5
             slider_width = max(slider_width, 5)
-            # Limit the slider width to a maximum value of 20 (optional)
+            #Limit the slider width to a maximum value of 20 
             slider_width = min(slider_width, 20)
-
-            # Update the slider width and position
+            #Update the slider width and position after drag
             button_choice["slider_width"] = slider_width
             slider_pos = (button_choice["slider_width_rect"].left + int((button_choice["slider_width"] - 1) / 19 * button_choice["slider_width_rect"].width),button_choice["slider_width_rect"])
             button_choice["slider_pos"] = slider_pos
 
-            # Perform any additional actions based on the updated slider width
-
 def save_whiteboard(whiteboard, username):
-    folder_path = os.path.join("user_data", username)  # Create a folder path based on the username
-    os.makedirs(folder_path, exist_ok=True)  # Create the folder if it doesn't exist
-    file_name = os.path.join(folder_path, f"{username}_whiteboard.png")  # Use the folder path to create the file_name
+    '''
+    Saves the white board as a png while to the folder user_data where the png gets saved to a file name of the username with the png named after the username.
+    The folder user_data has to be checked if it's in use and based on that it may or may not created the folder. A text is set with a timer so that it only displays
+    for a short period of time. 
+    Parameter: whiteboard is the display of the white board application
+    Parameter: username is the username that the user used to login which is used to create a file and folder personalized to them
+    Return: N/A
+    '''
+    
+    #Create the user_data folder with username folder if it doesn't exist
+    folder_path = os.path.join("user_data", username)  
+    os.makedirs(folder_path, exist_ok=True) 
+    #Use the folder path to create the file_name with the username
+    file_name = os.path.join(folder_path, f"{username}_whiteboard.png") 
+    #Pygame save images to the folder
     pygame.image.save(whiteboard, file_name)
+    #Confirm save white board displays for a limited amount of time
     confirm_save_font = pygame.font.Font(None, 36)
     confirm_save_text = confirm_save_font.render("Whiteboard saved", True, GREEN)
     confirm_save_text_rect = confirm_save_text.get_rect(center=screen.get_rect().center)
@@ -312,7 +352,6 @@ def run_kanban_main(username):
     screen_info = pygame.display.Info()
     WIDTH = screen_info.current_w
     HEIGHT = screen_info.current_h
-    screen = pygame.display.set_mode((0, 0), FULLSCREEN)
 
     # Set the font properties
     FONT_SIZE = 24
@@ -507,7 +546,7 @@ def run_kanban_main(username):
     button_height = 50
     button_x = (WIDTH - button_width) // 2
     button_y = 10
-    button_color = GRAY
+    button_color = GREY
     button_text = "Create Note"
     button_text_color = BLACK
 
@@ -522,7 +561,7 @@ def run_kanban_main(username):
     save_button_width = 150
     save_button_height = 50
     save_button_y = button_y
-    save_button_color = GRAY
+    save_button_color = GREY
     save_button_text = "Save"
     save_button_text_color = BLACK
 
@@ -530,7 +569,7 @@ def run_kanban_main(username):
     clear_button_width = 150
     clear_button_height = 50
     clear_button_y = button_y
-    clear_button_color = GRAY
+    clear_button_color = GREY
     clear_button_text = "Clear"
     clear_button_text_color = BLACK
 
@@ -541,7 +580,7 @@ def run_kanban_main(username):
     load_button_width = 150
     load_button_height = 50
     load_button_y = button_y
-    load_button_color = GRAY
+    load_button_color = GREY
     load_button_text = "Load"
     load_button_text_color = BLACK
 
