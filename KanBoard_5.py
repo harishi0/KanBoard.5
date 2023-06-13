@@ -547,7 +547,6 @@ def run_kanban_main():
             clock.tick(60)
     load_notes()
     runkanban()
-run_kanban_main()
 
     
 # Calendar Section
