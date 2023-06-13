@@ -1,3 +1,9 @@
+#Whiteboard done by Ishaan Patel
+#Kanban Board done by Harish Buvanendran 
+#Calendar done by Zhiqian Zou
+#Timer done by Isa Jamal
+
+
 #Imports
 
 import pygame
@@ -12,6 +18,7 @@ import subprocess
 import calendar
 import random
 import json
+
 
 #Initialize pygame
 
@@ -29,25 +36,31 @@ BLUE = (0, 191, 255)
 GREY = (220, 220, 220)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
-# Define colors
-WHITE = (255, 255, 255)
 YELLOW = (255, 255, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
 CYAN = (0, 255, 255)
 MAGENTA = (255, 0, 255)
 BLACK = (0, 0, 0)
-GRAY = (128, 128, 128)
 background_color = WHITE
 
 #Set the screen variable to full screen to be used throughout the code
 
 screen = pygame.display.set_mode((0, 0), FULLSCREEN)
 
+
 #Whiteboard Section
 
 def mouse_button_action(pos, button_choice, username):
+    '''
+        Functionality for what every button press does in the whiteboard.
+        Parameter: pos gets the cursor position on the whiteboard
+        Parameter: button_choice is a dictionary called which has the current states of the buttons that are controlled by the position of the mouse
+        Parameter: username is to determine which user is using the whiteboard
+        Return: N/A
+    '''
+    
+    #Updates the button functionality based on cursor position
     button_choice["black"] = button_choice["black_button_rect"].collidepoint(pos)
     button_choice["blue"] = button_choice["blue_button_rect"].collidepoint(pos)
     button_choice["eraser"] = button_choice["eraser_button_rect"].collidepoint(pos)
@@ -57,10 +70,11 @@ def mouse_button_action(pos, button_choice, username):
     button_choice["save"] = button_choice["save_button_rect"].collidepoint(pos)
     button_choice["load"] = button_choice["load_button_rect"].collidepoint(pos)
     button_choice["back"] = button_choice["back_button_rect"].collidepoint(pos)
-
-    if button_choice["whiteboard_rect"].collidepoint(pos):
-        drawing(pos, button_choice)
-
+    
+    #Calls function to set up drawing on whiteboard
+    drawing(pos, button_choice)
+    
+    #If statements determining whiteboard functionality based on what button is selected
     if button_choice["black"]:
         button_choice["color"] = BLACK
     elif button_choice["blue"]:
@@ -74,27 +88,55 @@ def mouse_button_action(pos, button_choice, username):
     elif button_choice["load"]:
         load_whiteboard(button_choice, username)
     elif button_choice["back"]:
-        back_button_action(username)
-
-    if button_choice["rgb_picker"]:
+        whiteboard_back_button_action(username)
+    elif button_choice["rgb_picker"]:
         button_choice["color"] = choose_color()
 
-def back_button_action(username):
+def whiteboard_back_button_action(username):
+    '''
+    Functionality for back button on whiteboard screen to return to the menu page.
+    Parameter: username is to determine which user is using the whiteboard
+    Return: N/A
+    '''
+    
+    #Call menu button screen
     menu_buttons(username)
-    # Add your code here to handle the action when the "Back" button is clicked
 
 def drawing(pos, button_choice):
+    '''
+    Set up the drawing portion of the whiteboard before the actual drawing commences by getting the starting position of the cursor.
+    Parameter: pos gets the starting cursor position of the whiteboard
+    Parameter: button_choice determines which button is selected 
+    Return: N/A
+    '''
+    
     button_choice["drawing"] = True
     button_choice["last_pos"] = pos
 
 def slider_motion(pos, button_choice):
+    '''
+    Set slider motion so that when it gets dragged, the function to change the width of the drawing gets called and when using slider, drawing cannot happen.
+    Parameter: pos gets cursor position of the whiteboard
+    Parameter: button_choice gets which button is selected 
+    Return: N/A
+    '''
+    
+    #If statements for whether the slider is dragging or not
     if button_choice["drag_slider"]:
         update_slider_width(pos, button_choice)
-
-    if button_choice["drawing"] and not button_choice["drag_slider"]:  # Add a check for "drag_slider"
+    if button_choice["drawing"] and not button_choice["drag_slider"]:  
         draw(pos, button_choice)
 
 def draw(pos, button_choice):
+    '''
+    Uses mouse cursor positions to and drawing distance to calculate drawing x and y points and using circles to iterate the drawing for smoother lines. Function first checks whether drawing is selected 
+    and if so, it proceeds to calculate drawing. Then the for loop iterates it as many times as the drawing distance.
+    Parameter: pos gets cursor position to calculate x and y coordinates to draw on whiteboard
+    Parameter: button_choice to select color or tool when drawing
+    Return: N/A
+    '''
+    
+    #Calculate drawing x and y coordinates
     if button_choice["drawing"]:
         color = button_choice["color"]
         last_pos = button_choice["last_pos"]
@@ -104,6 +146,7 @@ def draw(pos, button_choice):
         step_x = drawing_distance_x / drawing_distance if drawing_distance != 0 else 0
         step_y = drawing_distance_y / drawing_distance if drawing_distance != 0 else 0
 
+        #Iterate the drawing through a for loop
         for i in range(drawing_distance):
             x = int(last_pos[0] + i * step_x)
             y = int(last_pos[1] + i * step_y)
@@ -112,30 +155,54 @@ def draw(pos, button_choice):
         button_choice["last_pos"] = pos
 
 def clear_whiteboard(whiteboard):
+    '''
+    Clear functionality which resets whiteboard background to what ever the background color is.
+    Parameter: whiteboard is the screen display which is set to full screen
+    Return: N/A
+    '''
     whiteboard.fill(background_color)
 
 def update_slider_width(pos, button_choice):
+    '''
+    Updates slider width so that thickness of drawing changes based on users slider selection. Maximum slider with is 20 while minimum is 5.
+    Parameter: pos gets cursor position of the white board to see if the slider is being dragged
+    Parameter: button_choice gets button functionality when buttons are selected
+    Return: N/A
+    '''
+    
+    #Checks if slider is being dragged
     if button_choice["drag_slider"]:
+        #Checks if the cursor is in the confines of the slider
         if button_choice["slider_width_rect"].left <= pos[0] <= button_choice["slider_width_rect"].right:
             # Calculate the new slider width based on the mouse position
             slider_width = int((pos[0] - button_choice["slider_width_rect"].left) / button_choice["slider_width_rect"].width * 19) + 1
-            # Limit the slider width to a minimum value of 1
+            #Limit the slider width to a minimum value of 5
             slider_width = max(slider_width, 5)
-            # Limit the slider width to a maximum value of 20 (optional)
+            #Limit the slider width to a maximum value of 20 
             slider_width = min(slider_width, 20)
-
-            # Update the slider width and position
+            #Update the slider width and position after drag
             button_choice["slider_width"] = slider_width
             slider_pos = (button_choice["slider_width_rect"].left + int((button_choice["slider_width"] - 1) / 19 * button_choice["slider_width_rect"].width),button_choice["slider_width_rect"])
             button_choice["slider_pos"] = slider_pos
 
-            # Perform any additional actions based on the updated slider width
-
 def save_whiteboard(whiteboard, username):
-    folder_path = os.path.join("user_data", username)  # Create a folder path based on the username
-    os.makedirs(folder_path, exist_ok=True)  # Create the folder if it doesn't exist
-    file_name = os.path.join(folder_path, f"{username}_whiteboard.png")  # Use the folder path to create the file_name
+    '''
+    Saves the white board as a png while to the folder user_data where the png gets saved to a file name of the username with the png named after the username.
+    The folder user_data has to be checked if it's in use and based on that it may or may not created the folder. A text is set with a timer so that it only displays
+    for a short period of time. 
+    Parameter: whiteboard is the display of the white board application
+    Parameter: username is the username that the user used to login which is used to create a file and folder personalized to them
+    Return: N/A
+    '''
+    
+    #Create the user_data folder with username folder if it doesn't exist
+    folder_path = os.path.join("user_data", username)  
+    os.makedirs(folder_path, exist_ok=True) 
+    #Use the folder path to create the file_name with the username
+    file_name = os.path.join(folder_path, f"{username}_whiteboard.png") 
+    #Pygame save images to the folder
     pygame.image.save(whiteboard, file_name)
+    #Confirm save white board displays for a limited amount of time
     confirm_save_font = pygame.font.Font(None, 36)
     confirm_save_text = confirm_save_font.render("Whiteboard saved", True, GREEN)
     confirm_save_text_rect = confirm_save_text.get_rect(center=screen.get_rect().center)
@@ -144,6 +211,13 @@ def save_whiteboard(whiteboard, username):
     pygame.time.wait(1 * 1000)
 
 def load_whiteboard(button_choice, username):
+    '''
+    Loads the white board as a png from the username specific folder located in the user_data folder. Try and except used so that if a 
+    white board has not already been saved, an error message occurs that displays for few seconds.
+    Parameter: button_choice for when the load button is selected
+    Parameter: username to load white board png from the user name specific file 
+    Return: N/A
+    '''
     folder_path = os.path.join("user_data", username)  # Create a folder path based on the username
     file_name = os.path.join(folder_path, f"{username}_whiteboard.png")  # Use the folder path to create the file_name
     try:
@@ -167,6 +241,13 @@ def load_whiteboard(button_choice, username):
         print(f"Could not load whiteboard from {file_name}")
 
 def choose_color():
+    '''
+    Used tkinter to open a pop up rgb selector window. This window allows the user to select a color and return it as a tuple.
+    If no color was selected from the rgb picker, the color is automatically set to black. 
+    Parameter: N/A
+    Return: Return tuple(int(c) for c in color[0]) to that the tuple can be used as a color for drawing
+    Return: Return BLACK if nothing is selected
+    '''
     root = tk.Tk()
     root.withdraw()
     color = colorchooser.askcolor()
@@ -178,12 +259,21 @@ def choose_color():
         return BLACK  # Returning black color as an example
 
 def run_whiteboard(username):
+    '''
+    Run function for the white board runs the entire GUI of the whiteboard. All the buttons, labels and texts are defined in this function.
+    Also a dictionary is used to store all the properties of the buttons and draw them. A while loop is set to iterate the GUI and deal
+    with any key down or mouse button down inputs.
+    Parameter: username to run the white board with the username file 
+    Return: N/A
+    '''
+    
+    #Set display of white board
     info = pygame.display.Info()
     clock = pygame.time.Clock()
     whiteboard = pygame.Surface((info.current_w, info.current_h))
     whiteboard.fill(background_color)
 
-    # Button properties
+    # Button properties in dictionary
     button_choice = {
         "whiteboard": whiteboard,
         "whiteboard_rect": pygame.Rect(0, 0, info.current_w, info.current_h),
@@ -211,26 +301,32 @@ def run_whiteboard(username):
         "back": False
     }
 
+    #White board loop to run GUI
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            
+            #For all mouse button down button inputs
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_button_action(event.pos, button_choice, username)  # Pass the username here
                 if event.button == 1 and button_choice["slider"]:
                     button_choice["drag_slider"] = True
                 elif event.button == 1 and button_choice["rgb_picker"]:
                     button_choice["color"] = choose_color()
+            #For all mouse motion inputs
             elif event.type == pygame.MOUSEMOTION:
                 slider_motion(event.pos, button_choice)
+            #For all mouse button up inputs
             elif event.type == pygame.MOUSEBUTTONUP:
                 button_choice["drawing"] = False
                 button_choice["drag_slider"] = False
+            #For all button key inputs
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 running = False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_BACKSPACE:
-                back_button_action(username)  # Trigger back button action on Backspace key press
+                whiteboard_back_button_action(username)  # Trigger back button action on Backspace key press
 
         screen.blit(button_choice["whiteboard"], (0, 0))
 
@@ -273,11 +369,352 @@ def run_whiteboard(username):
         clock.tick(60)
 
     pygame.quit()
+
+#Kanban Section
+
+def run_kanban_main(username):
+    """
+    Runs the main Kanban application.
+
+    """
+    # Initialize Pygame
+    screen_info = pygame.display.Info()
+    WIDTH = screen_info.current_w
+    HEIGHT = screen_info.current_h
+
+    # Set the font properties
+    FONT_SIZE = 24
+    FONT_NAME = pygame.font.get_default_font()
+    font = pygame.font.Font(FONT_NAME, FONT_SIZE)
+
+    notes = []  # List to store notes
+
+    def draw_note(note):
+        '''
+        Draws a note on the screen
+
+           perameters(note[]) The note dictionary containing its properties.
+        '''
+        
+        if note['selected']:
+            pygame.draw.rect(screen, YELLOW, (note['x'] - 5, note['y'] - 5, note['width'] + 10, note['height'] + 10))
+        pygame.draw.rect(screen, note['color'], (note['x'], note['y'], note['width'], note['height']))
+
+        lines = note['text'].split('\n')
+        text_lines = []
+
+# prevent typing to go outside the borders of the sticky note
+        for line in lines:
+            words = line.split(' ')
+            current_line = ''
+            for word in words:
+                test_line = current_line + word + ' '
+                if font.size(test_line)[0] <= note['width'] - 20:
+                    current_line = test_line
+                else:
+                    if current_line:
+                        text_lines.append(current_line)
+                    current_line = word + ' '
+            if current_line:
+                text_lines.append(current_line)
+
+        for i, line in enumerate(text_lines):
+            text_surface = font.render(line, True, BLACK)
+            text_x = note['x'] + 10
+            text_y = note['y'] + 10 + (i * FONT_SIZE)
+
+            if text_y + FONT_SIZE <= note['y'] + note['height'] - 10:
+                screen.blit(text_surface, (text_x, text_y))
+            else:
+                break
+
+
+    def events_note(note, event):
+        """
+        Handles events for the notes.
+
+        Args:
+            note (dict): The note dictionary.
+            event (pygame.event.Event): The event object.
+        """
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = pygame.mouse.get_pos()
+            if event.button == 1:
+                if note['selected']:
+                    note['selected'] = False
+                elif pygame.Rect(note['x'], note['y'], note['width'], note['height']).collidepoint(mouse_pos):
+                    note['selected'] = True
+                    note['offset'] = (mouse_pos[0] - note['x'], mouse_pos[1] - note['y'])
+            elif event.button == 3:
+                if pygame.Rect(note['x'], note['y'], note['width'], note['height']).collidepoint(mouse_pos):
+                    note['color'] = random.choice([RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA])
+        elif event.type == pygame.KEYDOWN and note['selected']:
+            if event.key == pygame.K_BACKSPACE:
+                if pygame.key.get_mods() & pygame.KMOD_CTRL and pygame.key.get_pressed()[pygame.K_BACKSPACE]:
+                    notes.remove(note)
+                else:
+                    note['text'] = note['text'][:-1]
+            elif event.key == pygame.K_RETURN:
+                note['text'] += '\n'
+            else:
+                note['text'] += event.unicode
+
+
+    def save_notes(username):
+        """
+        Saves the notes to a JSON file for the given username.
+        username (str): The username associated with the notes.
+
+        """
+        data = []
+        for note in notes:
+            data.append({
+                'x': note['x'],
+                'y': note['y'],
+                'text': note['text']
+            })
+
+        # Create the "user_data" folder if it doesn't exist
+        folder_path = "user_data"
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+
+        # Save the notes to a JSON file
+        file_path = os.path.join(folder_path, f"{username}_kanban.json")
+        with open(file_path, 'w') as file:
+            json.dump(data, file)
+
+
+    def load_notes(username):
+        """
+            Loads the notes from a JSON file for the given username.
+
+            perameter username (str): The username of the acount the user is signed into.
+            used to name the specific file so that it can be used to load the data for each seperate user
+
+            """
+        file_path = os.path.join('user_data', f'{username}_kanban.json')
+        try:
+            with open(file_path, 'r') as file:
+                data = json.load(file)
+                for note_data in data:
+                    note = {
+                        'x': note_data['x'],
+                        'y': note_data['y'],
+                        'width': 200,
+                        'height': 200,
+                        'color': random.choice([RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA]),
+                        'selected': False,
+                        'text': note_data['text']
+                    }
+                    notes.append(note)
+        except FileNotFoundError:
+            pass
+
+
+    def create_note():
+        """
+        Creates a new note.
+        """
+
+        note = {
+            'x': random.randint(0, WIDTH - 200),
+            'y': random.randint(0, HEIGHT - 200),
+            'width': 200,
+            'height': 200,
+            'color': random.choice([RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA]),
+            'selected': False,
+            'text': ""
+        }
+        notes.append(note)
+
+
+    def draw_kanban_button(x, y, width, height, color, text, text_color):
+        '''
+        Draws a button on the screen.
+
+    perameters:
+        x (int): The x-coordinate of the top-left corner of the button.
+        y (int): The y-coordinate of the top-left corner of the button.
+        width (int): The width of the button.
+        height (int): The height of the button.
+        color (tuple): The color of the button (RGB format).
+        text (str): The text displayed on the button.
+        text_color (tuple): The color of the text (RGB format).
+        '''
+        pygame.draw.rect(screen, color, (x, y, width, height))
+        text_surface = font.render(text, True, text_color)
+        text_x = x + (width - text_surface.get_width()) // 2
+        text_y = y + (height - text_surface.get_height()) // 2
+        screen.blit(text_surface, (text_x, text_y))
+
+
+    def draw_kanban_board():
+        """
+        Draws the Kanban board categories on the screen. 
+        by gettting the number of columns/categories and dividing it by the width of the screen
+        to get the column width and placing the titles the top center of each categorie.
+        """
+        num_columns = 4  # Number of Kanban board columns
+        column_width = WIDTH // num_columns
+
+        # Define the titles for each category
+        titles = ["To Do", "In Progress","Testing", "Done"]
+
+        for i in range(num_columns):
+            x = i * column_width
+            pygame.draw.line(screen, BLACK, (x, 0), (x, HEIGHT), 2)
+
+            # Draw the title for the current category
+            title_surface = font.render(titles[i], True, BLACK)
+            title_x = x + (column_width - title_surface.get_width()) // 2
+            title_y = 65
+            screen.blit(title_surface, (title_x, title_y))
+
+
+    # Create the "Create Note" button
+    button_width = 150
+    button_height = 50
+    button_x = (WIDTH - button_width) // 2
+    button_y = 10
+    button_color = GREY
+    button_text = "Create Note"
+    button_text_color = BLACK
+
+    # Calculate the spacing between buttons
+    button_spacing = 10
+
+    # Calculate the positions of the buttons
+    save_button_x = button_x - button_width - button_spacing
+    clear_button_x = button_x + button_width + button_spacing
+
+    # Create the "Save" button
+    save_button_width = 150
+    save_button_height = 50
+    save_button_y = button_y
+    save_button_color = GREY
+    save_button_text = "Save"
+    save_button_text_color = BLACK
+
+    # Create the "Clear" button
+    clear_button_width = 150
+    clear_button_height = 50
+    clear_button_y = button_y
+    clear_button_color = GREY
+    clear_button_text = "Clear"
+    clear_button_text_color = BLACK
+
+    # Calculate the position of the "Load" button
+    load_button_x = clear_button_x + clear_button_width + button_spacing
+
+    # Create the "Load" button
+    load_button_width = 150
+    load_button_height = 50
+    load_button_y = button_y
+    load_button_color = GREY
+    load_button_text = "Load"
+    load_button_text_color = BLACK
+
+    # Draw back button
+    BACK_BUTTON_WIDTH = 100
+    BACK_BUTTON_HEIGHT = 40
+    back_button_x = (WIDTH - BACK_BUTTON_WIDTH) // 2
+    back_button_y = HEIGHT - BACK_BUTTON_HEIGHT - 10
+    back_button_rect = pygame.Rect(back_button_x, back_button_y, BACK_BUTTON_WIDTH, BACK_BUTTON_HEIGHT)
+    back_button_color = BLACK
+    pygame.draw.rect(screen, back_button_color, back_button_rect)
+    back_button_font = pygame.font.Font(None, 24)
+    back_button_text_rendered = back_button_font.render("Back", True, WHITE)
+    back_button_text_rect = back_button_text_rendered.get_rect(center=back_button_rect.center)
+    screen.blit(back_button_text_rendered, back_button_text_rect)
+        
+    def runkanban(username):
+        # Main game loop
+        """
+        Runs the Kanban board application.
+        """
+        running = True
+        clock = pygame.time.Clock()
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    save_notes()
+                    running = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_BACKSPACE:
+                        if pygame.key.get_mods() & pygame.KMOD_CTRL and pygame.key.get_pressed()[pygame.K_BACKSPACE]:
+                            for note in notes:
+                                if note['selected']:
+                                    notes.remove(note)
+
+                for note in notes:
+                    events_note(note, event)
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = pygame.mouse.get_pos()
+                    if event.button == 1:
+                        if pygame.Rect(button_x, button_y, button_width, button_height).collidepoint(mouse_pos):
+                            create_note()
+                        elif pygame.Rect(save_button_x, save_button_y, save_button_width, save_button_height).collidepoint(
+                                mouse_pos):
+                            save_notes(username)
+                        elif pygame.Rect(load_button_x, load_button_y, load_button_width, load_button_height).collidepoint(
+                                mouse_pos):
+                            load_notes(username)
+                        elif pygame.Rect(clear_button_x, clear_button_y, clear_button_width, clear_button_height).collidepoint(
+                                mouse_pos):
+                            notes.clear()
+                        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                            # Check if the click is inside the calendar grid
+                            if back_button_rect.collidepoint(event.pos):
+                                menu_buttons(username) 
+
+                elif event.type == pygame.MOUSEMOTION:
+                    for note in notes:
+                        if note['selected']:
+                            mouse_pos = pygame.mouse.get_pos()
+                            note['x'] = mouse_pos[0] - note['offset'][0]
+                            note['y'] = mouse_pos[1] - note['offset'][1]
+
+            screen.fill(WHITE)
+            draw_kanban_board()
+            draw_kanban_button(button_x, button_y, button_width, button_height, button_color, button_text, button_text_color)
+            draw_kanban_button(save_button_x, save_button_y, save_button_width, save_button_height, save_button_color,save_button_text, save_button_text_color)
+            draw_kanban_button(load_button_x, load_button_y, load_button_width, load_button_height, load_button_color,load_button_text, load_button_text_color)
+            draw_kanban_button(clear_button_x, clear_button_y, clear_button_width, clear_button_height, clear_button_color,clear_button_text, clear_button_text_color)
+            for note in notes:
+                draw_note(note)
+            
+            # Draw the back button
+            pygame.draw.rect(screen, back_button_color, back_button_rect)
+            screen.blit(back_button_text_rendered, back_button_text_rect)
+
+            # Define the text properties
+            how_delete_note_font = pygame.font.Font(None, 20)
+            how_delete_note_text = how_delete_note_font.render("Press Control + Backspace to delete a note", True, BLACK)
+            how_delete_note_rect = how_delete_note_text.get_rect(top=10, left=10)
+
+            # Blit the text onto the screen
+            screen.blit(how_delete_note_text, how_delete_note_rect)
+
+            pygame.display.flip()
+            clock.tick(60)
+    load_notes(username)
+    runkanban(username)
+
     
 # Calendar Section
 
 # Function to save the calendar edition
 def save_calendar(username, notes):
+    '''
+    Save the calendar edition to a file.
+    perameter username (str): The username of the calendar owner.
+    perameter notes (dict): A dictionary containing the notes for each day.
+
+    Returns:
+        None
+    '''
     try:
         folder_path = os.path.join("user_data", username)  # Create a folder path based on the username
         os.makedirs(folder_path, exist_ok=True)  # Create the folder if it doesn't exist
@@ -290,6 +727,15 @@ def save_calendar(username, notes):
         print("Error occurred while saving the calendar edition.")
 
 def load_calendar(username):
+    '''
+    Load the calendar dates/edits from a file.
+    perameter username (str): The username of the calendar owner./ acounnt that the user is logged on to
+    
+    Returns:
+        a dictionary containg the notes for each day using 
+        notes = {}
+    
+    '''
     notes = {}  # Initialize the dictionary
     try:
         folder_path = os.path.join("user_data", username)  # Create a folder path based on the username
@@ -314,6 +760,11 @@ def load_calendar(username):
     return notes  # Return the notes dictionary
 
 def run_calendar(username):
+    """
+    Runs the calendar application.
+    
+    parameters username (str): The username of the account that the user is currently logged onto.
+    """
     WIDTH, HEIGHT = screen.get_size()
 
     # Set font
@@ -579,17 +1030,23 @@ def run_pomodoro_timer(username):
         screen.blit(timer_text, timer_text_rect)
 
         pygame.display.flip()
+        
 
 #Menu Section
 
 def menu_button_action(label, username):
+    '''
+    Function organizes all run functions into if statements. Whenever the button of one of these features is called, it will
+    run the function corresponding to that feature. 
+    Parameter: label is the button labels for the button buttons and is used to describe when one of the buttons is selected
+    Parameter: username is to specify the account information of the user so that their work gets saved and loaded to their folders
+    Return: N/A
+    '''
     if label == "Whiteboard":
         run_whiteboard(username)
     elif label == "Kanban Board":
-        print("Kanban Board button clicked")
-        # Add code for the action of the Kanban Board button
+        run_kanban_main(username)
     elif label == "Calendar":
-        print("Calendar button clicked")
         run_calendar(username)
     elif label == "Timer":
         run_pomodoro_timer(username)
@@ -598,8 +1055,15 @@ def menu_button_action(label, username):
         sys.exit()
 
 def menu_buttons(username):
+    '''
+    Function runs the menu buttons and draws the button shapes with the button labels. Also it uses a while loop to iterate the application
+    when it runs. 
+    Parameter: username recognizes who is using the code and saves and loads according to the user
+    Return: N/A
+    '''
     clock = pygame.time.Clock()
 
+    #Determine labels, color and position of the menu buttons
     button_labels = ["Whiteboard", "Kanban Board", "Calendar", "Timer", "Exit"]
     button_width = 200
     button_height = 50
@@ -608,6 +1072,7 @@ def menu_buttons(username):
     button_color = BLACK
     button_text_color = WHITE
 
+    #While loop to run the GUI
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -630,6 +1095,7 @@ def menu_buttons(username):
 
         screen.fill(WHITE)
         
+        #Iterate labels for multiple buttons and the drawing of each button
         for i, label in enumerate(button_labels):
             button_rect = pygame.Rect(
                 (screen.get_width() - button_width) // 2,
@@ -647,15 +1113,22 @@ def menu_buttons(username):
             screen.blit(button_text, text_rect)
 
         pygame.display.flip()
-        clock.tick(30)
-    pygame.quit()
+        clock.tick(60)
+
 
 #Login Section
 
 max_length_login_signup = 12
 
 def login():
-    
+    '''
+    Displays a login screen for the application
+
+    The function sets up the screen and handles user inputs for entering a username and password with 
+    buttons for logging in,signing up for an acount(which runs the signup() function).
+    it validates the login credentials by comparig them to a csv file containing the userdata(usernames and passwords).
+    if the login is succesful it runs the menu function for the specic accounts
+    '''
     # Set up the screen
     screen_width, screen_height = pygame.display.get_surface().get_size()
 
@@ -824,7 +1297,15 @@ def login():
     pygame.quit()
 
 def signup():
+    """
+    Displays a signup screen where users can create a new account for KanBoard.5.
 
+    The function sets up the screen, handles user input for entering a new username and password,
+    and provides buttons for signing up or going back to the login screen. It validates the input,
+    checks if the username is already taken, and creates a new account by appending the username and password
+    to a CSV file. If the signup is successful, it displays a confirmation message and transitions to the login screen.
+
+    """
     # Set up the screen
     screen_width, screen_height = pygame.display.get_surface().get_size()
 
@@ -990,5 +1471,7 @@ def signup():
         clock.tick(60)
 
     pygame.quit()
+    
+#Run login page as first page 
 if __name__ == '__main__':
     login()
