@@ -1030,17 +1030,23 @@ def run_pomodoro_timer(username):
         screen.blit(timer_text, timer_text_rect)
 
         pygame.display.flip()
+        
 
 #Menu Section
 
 def menu_button_action(label, username):
+    '''
+    Function organizes all run functions into if statements. Whenever the button of one of these features is called, it will
+    run the function corresponding to that feature. 
+    Parameter: label is the button labels for the button buttons and is used to describe when one of the buttons is selected
+    Parameter: username is to specify the account information of the user so that their work gets saved and loaded to their folders
+    Return: N/A
+    '''
     if label == "Whiteboard":
         run_whiteboard(username)
     elif label == "Kanban Board":
-        print("Kanban Board button clicked")
         run_kanban_main(username)
     elif label == "Calendar":
-        print("Calendar button clicked")
         run_calendar(username)
     elif label == "Timer":
         run_pomodoro_timer(username)
@@ -1049,8 +1055,15 @@ def menu_button_action(label, username):
         sys.exit()
 
 def menu_buttons(username):
+    '''
+    Function runs the menu buttons and draws the button shapes with the button labels. Also it uses a while loop to iterate the application
+    when it runs. 
+    Parameter: username recognizes who is using the code and saves and loads according to the user
+    Return: N/A
+    '''
     clock = pygame.time.Clock()
 
+    #Determine labels, color and position of the menu buttons
     button_labels = ["Whiteboard", "Kanban Board", "Calendar", "Timer", "Exit"]
     button_width = 200
     button_height = 50
@@ -1059,6 +1072,7 @@ def menu_buttons(username):
     button_color = BLACK
     button_text_color = WHITE
 
+    #While loop to run the GUI
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -1081,6 +1095,7 @@ def menu_buttons(username):
 
         screen.fill(WHITE)
         
+        #Iterate labels for multiple buttons and the drawing of each button
         for i, label in enumerate(button_labels):
             button_rect = pygame.Rect(
                 (screen.get_width() - button_width) // 2,
@@ -1098,8 +1113,8 @@ def menu_buttons(username):
             screen.blit(button_text, text_rect)
 
         pygame.display.flip()
-        clock.tick(30)
-    pygame.quit()
+        clock.tick(60)
+
 
 #Login Section
 
@@ -1456,5 +1471,7 @@ def signup():
         clock.tick(60)
 
     pygame.quit()
+    
+#Run login page as first page 
 if __name__ == '__main__':
     login()
