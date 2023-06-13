@@ -464,7 +464,6 @@ def run_kanban_main(username):
         """
         Saves the notes to a JSON file for the given username.
         username (str): The username associated with the notes.
-
         """
         data = []
         for note in notes:
@@ -480,20 +479,19 @@ def run_kanban_main(username):
             os.makedirs(folder_path)
 
         # Save the notes to a JSON file
-        file_path = os.path.join(folder_path, f"{username}_kanban.json")
+        file_path = os.path.join(folder_path, username, f"{username}_kanban.json")
         with open(file_path, 'w') as file:
             json.dump(data, file)
 
 
     def load_notes(username):
         """
-            Loads the notes from a JSON file for the given username.
+        Loads the notes from a JSON file for the given username.
 
-            perameter username (str): The username of the acount the user is signed into.
-            used to name the specific file so that it can be used to load the data for each seperate user
-
-            """
-        file_path = os.path.join('user_data', f'{username}_kanban.json')
+        parameter username (str): The username of the account the user is signed into.
+        used to name the specific file so that it can be used to load the data for each separate user
+        """
+        file_path = os.path.join('user_data', username, f'{username}_kanban.json')
         try:
             with open(file_path, 'r') as file:
                 data = json.load(file)
@@ -503,7 +501,7 @@ def run_kanban_main(username):
                         'y': note_data['y'],
                         'width': 200,
                         'height': 200,
-                        'color': random.choice([RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA]),
+                        'color': random.choice(["RED", "GREEN", "BLUE", "YELLOW", "CYAN", "MAGENTA"]),
                         'selected': False,
                         'text': note_data['text']
                     }
