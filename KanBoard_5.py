@@ -10,6 +10,8 @@ from tkinter import colorchooser
 from button import Button
 import subprocess
 import calendar
+import random
+import json
 
 #Initialize pygame
 
@@ -27,6 +29,16 @@ BLUE = (0, 191, 255)
 GREY = (220, 220, 220)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
+# Define colors
+WHITE = (255, 255, 255)
+YELLOW = (255, 255, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+CYAN = (0, 255, 255)
+MAGENTA = (255, 0, 255)
+BLACK = (0, 0, 0)
+GRAY = (128, 128, 128)
 background_color = WHITE
 
 #Set the screen variable to full screen to be used throughout the code
