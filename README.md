@@ -14,8 +14,8 @@ Multi purpose tool for students and employees
 		-  Writing text on the whiteboard with different fonts and font sizes(sticky note?)
 - Kanban board
 		-  Categories
-		-  Add multiple categories to the board
-		-  Make sticky notes in each category
+		-  Make sticky notes that you can edit 
+		-  Saving/Loading funcions for the kanban board
 -  Calendar
 		-  Read current date/time on the users computer calendar using dd/mm/yyyy format
 		-  Set tasks/reminders on specific dates for projects
