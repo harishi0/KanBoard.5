@@ -279,7 +279,7 @@ def run_whiteboard(username):
         "whiteboard_rect": pygame.Rect(0, 0, info.current_w, info.current_h),
         "black_button_rect": pygame.Rect(10, 10, 100, 50),
         "blue_button_rect": pygame.Rect(120, 10, 100, 50),
-        "rgb_picker_rect": pygame.Rect(230, 10, 100, 50),  
+        "rgb_picker_rect": pygame.Rect(230, 10, 100, 50),  # Added rgb_picker_rect
         "color_choice_rect": pygame.Rect(340, 10, 100, 50),
         "eraser_button_rect": pygame.Rect(450, 10, 100, 50),
         "clear_button_rect": pygame.Rect(560, 10, 100, 50),
@@ -310,7 +310,7 @@ def run_whiteboard(username):
             
             #For all mouse button down button inputs
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_button_action(event.pos, button_choice, username)  
+                mouse_button_action(event.pos, button_choice, username)  # Pass the username here
                 if event.button == 1 and button_choice["slider"]:
                     button_choice["drag_slider"] = True
                 elif event.button == 1 and button_choice["rgb_picker"]:
@@ -489,8 +489,8 @@ def run_kanban_main(username):
         """
             Loads the notes from a JSON file for the given username.
 
-            Args:
-                username (str): The username associated with the notes.
+            perameter username (str): The username of the acount the user is signed into.
+            used to name the specific file so that it can be used to load the data for each seperate user
 
             """
         file_path = os.path.join('user_data', f'{username}_kanban.json')
@@ -553,7 +553,7 @@ def run_kanban_main(username):
         """
         Draws the Kanban board categories on the screen. 
         by gettting the number of columns/categories and dividing it by the width of the screen
-        to get the column width and placing the titles the top center of each categories 
+        to get the column width and placing the titles the top center of each categorie.
         """
         num_columns = 4  # Number of Kanban board columns
         column_width = WIDTH // num_columns
