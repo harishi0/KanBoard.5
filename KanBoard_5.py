@@ -533,7 +533,7 @@ def run_kanban_main(username):
         '''
         Draws a button on the screen.
 
-        
+    perameters:
         x (int): The x-coordinate of the top-left corner of the button.
         y (int): The y-coordinate of the top-left corner of the button.
         width (int): The width of the button.
@@ -551,13 +551,15 @@ def run_kanban_main(username):
 
     def draw_kanban_board():
         """
-        Draws the Kanban board on the screen.
+        Draws the Kanban board categories on the screen. 
+        by gettting the number of columns/categories and dividing it by the width of the screen
+        to get the column width and placing the titles the top center of each categories 
         """
-        num_columns = 3  # Number of Kanban board columns
+        num_columns = 4  # Number of Kanban board columns
         column_width = WIDTH // num_columns
 
         # Define the titles for each category
-        titles = ["To Do", "In Progress", "Done"]
+        titles = ["To Do", "In Progress","Testing", "Done"]
 
         for i in range(num_columns):
             x = i * column_width
