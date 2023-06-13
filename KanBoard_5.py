@@ -211,6 +211,13 @@ def save_whiteboard(whiteboard, username):
     pygame.time.wait(1 * 1000)
 
 def load_whiteboard(button_choice, username):
+    '''
+    Loads the white board as a png from the username specific folder located in the user_data folder. Try and except used so that if a 
+    white board has not already been saved, an error message occurs that displays for few seconds.
+    Parameter: button_choice for when the load button is selected
+    Parameter: username to load white board png from the user name specific file 
+    Return: N/A
+    '''
     folder_path = os.path.join("user_data", username)  # Create a folder path based on the username
     file_name = os.path.join(folder_path, f"{username}_whiteboard.png")  # Use the folder path to create the file_name
     try:
@@ -234,6 +241,13 @@ def load_whiteboard(button_choice, username):
         print(f"Could not load whiteboard from {file_name}")
 
 def choose_color():
+    '''
+    Used tkinter to open a pop up rgb selector window. This window allows the user to select a color and return it as a tuple.
+    If no color was selected from the rgb picker, the color is automatically set to black. 
+    Parameter: N/A
+    Return: Return tuple(int(c) for c in color[0]) to that the tuple can be used as a color for drawing
+    Return: Return BLACK if nothing is selected
+    '''
     root = tk.Tk()
     root.withdraw()
     color = colorchooser.askcolor()
@@ -245,18 +259,27 @@ def choose_color():
         return BLACK  # Returning black color as an example
 
 def run_whiteboard(username):
+    '''
+    Run function for the white board runs the entire GUI of the whiteboard. All the buttons, labels and texts are defined in this function.
+    Also a dictionary is used to store all the properties of the buttons and draw them. A while loop is set to iterate the GUI and deal
+    with any key down or mouse button down inputs.
+    Parameter: username to run the white board with the username file 
+    Return: N/A
+    '''
+    
+    #Set display of white board
     info = pygame.display.Info()
     clock = pygame.time.Clock()
     whiteboard = pygame.Surface((info.current_w, info.current_h))
     whiteboard.fill(background_color)
 
-    # Button properties
+    # Button properties in dictionary
     button_choice = {
         "whiteboard": whiteboard,
         "whiteboard_rect": pygame.Rect(0, 0, info.current_w, info.current_h),
         "black_button_rect": pygame.Rect(10, 10, 100, 50),
         "blue_button_rect": pygame.Rect(120, 10, 100, 50),
-        "rgb_picker_rect": pygame.Rect(230, 10, 100, 50),  # Added rgb_picker_rect
+        "rgb_picker_rect": pygame.Rect(230, 10, 100, 50),  
         "color_choice_rect": pygame.Rect(340, 10, 100, 50),
         "eraser_button_rect": pygame.Rect(450, 10, 100, 50),
         "clear_button_rect": pygame.Rect(560, 10, 100, 50),
@@ -278,22 +301,28 @@ def run_whiteboard(username):
         "back": False
     }
 
+    #White board loop to run GUI
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            
+            #For all mouse button down button inputs
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_button_action(event.pos, button_choice, username)  # Pass the username here
+                mouse_button_action(event.pos, button_choice, username)  
                 if event.button == 1 and button_choice["slider"]:
                     button_choice["drag_slider"] = True
                 elif event.button == 1 and button_choice["rgb_picker"]:
                     button_choice["color"] = choose_color()
+            #For all mouse motion inputs
             elif event.type == pygame.MOUSEMOTION:
                 slider_motion(event.pos, button_choice)
+            #For all mouse button up inputs
             elif event.type == pygame.MOUSEBUTTONUP:
                 button_choice["drawing"] = False
                 button_choice["drag_slider"] = False
+            #For all button key inputs
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 running = False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_BACKSPACE:
