@@ -110,7 +110,6 @@ def drawing(pos, button_choice):
     Parameter: pos gets the starting cursor position of the whiteboard
     Parameter: button_choice determines which button is selected 
     Return: N/A
-    
     '''
     button_choice["drawing"] = True
     button_choice["last_pos"] = pos
@@ -393,10 +392,7 @@ def run_kanban_main(username):
                 note['text'] += event.unicode
 
 
-    def save_notes():
-        """
-        Saves the notes to a JSON file.
-        """
+    def save_notes(username):
         data = []
         for note in notes:
             data.append({
@@ -404,16 +400,23 @@ def run_kanban_main(username):
                 'y': note['y'],
                 'text': note['text']
             })
-        with open('notes.json', 'w') as file:
+
+        # Create the "user_data" folder if it doesn't exist
+        folder_path = "user_data"
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+
+        # Save the notes to a JSON file
+        file_path = os.path.join(folder_path, f"{username}_kanban.json")
+        with open(file_path, 'w') as file:
             json.dump(data, file)
 
 
-    def load_notes():
-        '''
-        Loads the notes from a JSON file.
-        '''
+    def load_notes(username):
+ 
+        file_path = os.path.join('user_data', f'{username}_kanban.json')
         try:
-            with open('notes.json', 'r') as file:
+            with open(file_path, 'r') as file:
                 data = json.load(file)
                 for note_data in data:
                     note = {
@@ -447,7 +450,7 @@ def run_kanban_main(username):
         notes.append(note)
 
 
-    def draw_button(x, y, width, height, color, text, text_color):
+    def draw_kanban_button(x, y, width, height, color, text, text_color):
         '''
         Draws a button on the screen.
 
@@ -544,9 +547,6 @@ def run_kanban_main(username):
     back_button_text_rect = back_button_text_rendered.get_rect(center=back_button_rect.center)
     screen.blit(back_button_text_rendered, back_button_text_rect)
         
-    
-
-
     def runkanban(username):
         # Main game loop
         """
@@ -576,10 +576,10 @@ def run_kanban_main(username):
                             create_note()
                         elif pygame.Rect(save_button_x, save_button_y, save_button_width, save_button_height).collidepoint(
                                 mouse_pos):
-                            save_notes()
+                            save_notes(username)
                         elif pygame.Rect(load_button_x, load_button_y, load_button_width, load_button_height).collidepoint(
                                 mouse_pos):
-                            load_notes()
+                            load_notes(username)
                         elif pygame.Rect(clear_button_x, clear_button_y, clear_button_width, clear_button_height).collidepoint(
                                 mouse_pos):
                             notes.clear()
@@ -597,10 +597,10 @@ def run_kanban_main(username):
 
             screen.fill(WHITE)
             draw_kanban_board()
-            draw_button(button_x, button_y, button_width, button_height, button_color, button_text, button_text_color)
-            draw_button(save_button_x, save_button_y, save_button_width, save_button_height, save_button_color,save_button_text, save_button_text_color)
-            draw_button(load_button_x, load_button_y, load_button_width, load_button_height, load_button_color,load_button_text, load_button_text_color)
-            draw_button(clear_button_x, clear_button_y, clear_button_width, clear_button_height, clear_button_color,clear_button_text, clear_button_text_color)
+            draw_kanban_button(button_x, button_y, button_width, button_height, button_color, button_text, button_text_color)
+            draw_kanban_button(save_button_x, save_button_y, save_button_width, save_button_height, save_button_color,save_button_text, save_button_text_color)
+            draw_kanban_button(load_button_x, load_button_y, load_button_width, load_button_height, load_button_color,load_button_text, load_button_text_color)
+            draw_kanban_button(clear_button_x, clear_button_y, clear_button_width, clear_button_height, clear_button_color,clear_button_text, clear_button_text_color)
             for note in notes:
                 draw_note(note)
             
@@ -618,7 +618,7 @@ def run_kanban_main(username):
 
             pygame.display.flip()
             clock.tick(60)
-    load_notes()
+    load_notes(username)
     runkanban(username)
 
     
