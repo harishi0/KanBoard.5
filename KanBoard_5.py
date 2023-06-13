@@ -1059,6 +1059,7 @@ def menu_buttons(username):
     Function runs the menu buttons and draws the button shapes with the button labels. Also it uses a while loop to iterate the application
     when it runs. 
     Parameter: username recognizes who is using the code and saves and loads according to the user
+    Return: N/A
     '''
     clock = pygame.time.Clock()
 
