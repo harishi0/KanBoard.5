@@ -1,3 +1,8 @@
+#Whiteboard done by Ishaan Patel
+#Kanban Board done by Harish Buvanendran 
+#Calendar done by Zhiqian Zou
+#Timer done by Isa Jamal
+
 #Imports
 
 import pygame
@@ -45,9 +50,19 @@ background_color = WHITE
 
 screen = pygame.display.set_mode((0, 0), FULLSCREEN)
 
+
 #Whiteboard Section
 
 def mouse_button_action(pos, button_choice, username):
+    '''
+        Functionality for what every button press does in the whiteboard
+        Parameter: pos gets the cursor position on the whiteboard
+        Parameter: button_choice is a dictionary called which has the current states of the buttons that are controlled by the position of the mouse
+        Parameter: username is to determine which user is using the whiteboard
+        Return: N/A
+    '''
+    
+    #Updates the button functionality based on cursor position
     button_choice["black"] = button_choice["black_button_rect"].collidepoint(pos)
     button_choice["blue"] = button_choice["blue_button_rect"].collidepoint(pos)
     button_choice["eraser"] = button_choice["eraser_button_rect"].collidepoint(pos)
@@ -57,10 +72,11 @@ def mouse_button_action(pos, button_choice, username):
     button_choice["save"] = button_choice["save_button_rect"].collidepoint(pos)
     button_choice["load"] = button_choice["load_button_rect"].collidepoint(pos)
     button_choice["back"] = button_choice["back_button_rect"].collidepoint(pos)
+    
+    #Calls function to set up drawing on whiteboard
+    drawing(pos, button_choice)
 
-    if button_choice["whiteboard_rect"].collidepoint(pos):
-        drawing(pos, button_choice)
-
+    #If statements determining whiteboard functionality based on what button is selected
     if button_choice["black"]:
         button_choice["color"] = BLACK
     elif button_choice["blue"]:
@@ -74,16 +90,28 @@ def mouse_button_action(pos, button_choice, username):
     elif button_choice["load"]:
         load_whiteboard(button_choice, username)
     elif button_choice["back"]:
-        back_button_action(username)
-
-    if button_choice["rgb_picker"]:
+        whiteboard_back_button_action(username)
+    elif button_choice["rgb_picker"]:
         button_choice["color"] = choose_color()
 
-def back_button_action(username):
+def whiteboard_back_button_action(username):
+    '''
+    Functionality for back button on whiteboard screen to return to the menu page
+    Parameter: username is to determine which user is using the whiteboard
+    Return: N/A
+    '''
+    
+    #Call menu button screen
     menu_buttons(username)
-    # Add your code here to handle the action when the "Back" button is clicked
 
 def drawing(pos, button_choice):
+    '''
+    Set up the drawing portion of the whiteboard before the actual drawing commences by getting the starting position of the cursor 
+    Parameter: pos gets the starting cursor position of the whiteboard
+    Parameter: button_choice determines which button is selected 
+    Return: N/A
+    
+    '''
     button_choice["drawing"] = True
     button_choice["last_pos"] = pos
 
@@ -230,7 +258,7 @@ def run_whiteboard(username):
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 running = False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_BACKSPACE:
-                back_button_action(username)  # Trigger back button action on Backspace key press
+                whiteboard_back_button_action(username)  # Trigger back button action on Backspace key press
 
         screen.blit(button_choice["whiteboard"], (0, 0))
 
