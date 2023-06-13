@@ -96,6 +96,8 @@ def drawing(pos, button_choice):
     '''
     Set up the drawing portion of the whiteboard before the actual drawing commences by getting the starting position of the cursor 
     Parameter: pos gets the starting cursor position of the whiteboard
+    Parameter: button_choice determines which button is selected 
+    Return: N/A
     
     '''
     button_choice["drawing"] = True
