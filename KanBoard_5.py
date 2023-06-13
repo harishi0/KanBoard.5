@@ -306,6 +306,7 @@ def run_whiteboard(username):
 def run_kanban_main(username):
     """
     Runs the main Kanban application.
+
     """
     # Initialize Pygame
     screen_info = pygame.display.Info()
@@ -324,8 +325,7 @@ def run_kanban_main(username):
         '''
         Draws a note on the screen
 
-          Args:
-            note (dict): The note dictionary containing its properties.
+           perameters(note[]) The note dictionary containing its properties.
         '''
         
         if note['selected']:
@@ -1036,7 +1036,14 @@ def menu_buttons(username):
 max_length_login_signup = 12
 
 def login():
-    
+    '''
+    Displays a login screen for the application
+
+    The function sets up the screen and handles user inputs for entering a username and password with 
+    buttons for logging in,signing up for an acount(which runs the signup() function).
+    it validates the login credentials by comparig them to a csv file containing the userdata(usernames and passwords).
+    if the login is succesful it runs the menu function for the specic accounts
+    '''
     # Set up the screen
     screen_width, screen_height = pygame.display.get_surface().get_size()
 
