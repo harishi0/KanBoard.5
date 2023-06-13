@@ -275,8 +275,11 @@ def run_whiteboard(username):
     pygame.quit()
 
 #Kanban Section
-# Kanban section
+
 def run_kanban_main():
+    """
+    Runs the main Kanban application.
+    """
     # Initialize Pygame
     screen_info = pygame.display.Info()
     WIDTH = screen_info.current_w
@@ -291,6 +294,13 @@ def run_kanban_main():
     notes = []  # List to store notes
 
     def draw_note(note):
+        '''
+        Draws a note on the screen
+
+          Args:
+            note (dict): The note dictionary containing its properties.
+        '''
+        
         if note['selected']:
             pygame.draw.rect(screen, YELLOW, (note['x'] - 5, note['y'] - 5, note['width'] + 10, note['height'] + 10))
         pygame.draw.rect(screen, note['color'], (note['x'], note['y'], note['width'], note['height']))
@@ -325,6 +335,13 @@ def run_kanban_main():
 
 
     def events_note(note, event):
+        """
+        Handles events for the notes.
+
+        Args:
+            note (dict): The note dictionary.
+            event (pygame.event.Event): The event object.
+        """
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = pygame.mouse.get_pos()
             if event.button == 1:
@@ -349,6 +366,9 @@ def run_kanban_main():
 
 
     def save_notes():
+        """
+        Saves the notes to a JSON file.
+        """
         data = []
         for note in notes:
             data.append({
@@ -361,6 +381,9 @@ def run_kanban_main():
 
 
     def load_notes():
+        '''
+        Loads the notes from a JSON file.
+        '''
         try:
             with open('notes.json', 'r') as file:
                 data = json.load(file)
@@ -380,6 +403,10 @@ def run_kanban_main():
 
 
     def create_note():
+        """
+        Creates a new note.
+        """
+
         note = {
             'x': random.randint(0, WIDTH - 200),
             'y': random.randint(0, HEIGHT - 200),
@@ -393,6 +420,18 @@ def run_kanban_main():
 
 
     def draw_button(x, y, width, height, color, text, text_color):
+        '''
+        Draws a button on the screen.
+
+        Args:
+            x (int): The x-coordinate of the top-left corner of the button.
+            y (int): The y-coordinate of the top-left corner of the button.
+            width (int): The width of the button.
+            height (int): The height of the button.
+            color (tuple): The color of the button (RGB format).
+            text (str): The text displayed on the button.
+            text_color (tuple): The color of the text (RGB format).
+        '''
         pygame.draw.rect(screen, color, (x, y, width, height))
         text_surface = font.render(text, True, text_color)
         text_x = x + (width - text_surface.get_width()) // 2
@@ -401,6 +440,9 @@ def run_kanban_main():
 
 
     def draw_kanban_board():
+        """
+        Draws the Kanban board on the screen.
+        """
         num_columns = 3  # Number of Kanban board columns
         column_width = WIDTH // num_columns
 
@@ -479,6 +521,9 @@ def run_kanban_main():
 
     def runkanban():
         # Main game loop
+        """
+        Runs the Kanban board application.
+        """
         running = True
         clock = pygame.time.Clock()
         while running:
