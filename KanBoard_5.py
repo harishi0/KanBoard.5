@@ -393,6 +393,11 @@ def run_kanban_main(username):
 
 
     def save_notes(username):
+        """
+        Saves the notes to a JSON file for the given username.
+        username (str): The username associated with the notes.
+
+        """
         data = []
         for note in notes:
             data.append({
@@ -413,7 +418,13 @@ def run_kanban_main(username):
 
 
     def load_notes(username):
- 
+        """
+            Loads the notes from a JSON file for the given username.
+
+            Args:
+                username (str): The username associated with the notes.
+
+            """
         file_path = os.path.join('user_data', f'{username}_kanban.json')
         try:
             with open(file_path, 'r') as file:
@@ -454,14 +465,14 @@ def run_kanban_main(username):
         '''
         Draws a button on the screen.
 
-        Args:
-            x (int): The x-coordinate of the top-left corner of the button.
-            y (int): The y-coordinate of the top-left corner of the button.
-            width (int): The width of the button.
-            height (int): The height of the button.
-            color (tuple): The color of the button (RGB format).
-            text (str): The text displayed on the button.
-            text_color (tuple): The color of the text (RGB format).
+        
+        x (int): The x-coordinate of the top-left corner of the button.
+        y (int): The y-coordinate of the top-left corner of the button.
+        width (int): The width of the button.
+        height (int): The height of the button.
+        color (tuple): The color of the button (RGB format).
+        text (str): The text displayed on the button.
+        text_color (tuple): The color of the text (RGB format).
         '''
         pygame.draw.rect(screen, color, (x, y, width, height))
         text_surface = font.render(text, True, text_color)
@@ -626,6 +637,14 @@ def run_kanban_main(username):
 
 # Function to save the calendar edition
 def save_calendar(username, notes):
+    '''
+    Save the calendar edition to a file.
+    perameter username (str): The username of the calendar owner.
+    perameter notes (dict): A dictionary containing the notes for each day.
+
+    Returns:
+        None
+    '''
     try:
         folder_path = os.path.join("user_data", username)  # Create a folder path based on the username
         os.makedirs(folder_path, exist_ok=True)  # Create the folder if it doesn't exist
@@ -638,6 +657,15 @@ def save_calendar(username, notes):
         print("Error occurred while saving the calendar edition.")
 
 def load_calendar(username):
+    '''
+    Load the calendar dates/edits from a file.
+    perameter username (str): The username of the calendar owner./ acounnt that the user is logged on to
+    
+    Returns:
+        a dictionary containg the notes for each day using 
+        notes = {}
+    
+    '''
     notes = {}  # Initialize the dictionary
     try:
         folder_path = os.path.join("user_data", username)  # Create a folder path based on the username
@@ -662,6 +690,11 @@ def load_calendar(username):
     return notes  # Return the notes dictionary
 
 def run_calendar(username):
+    """
+    Runs the calendar application.
+    
+    parameters username (str): The username of the account that the user is currently logged onto.
+    """
     WIDTH, HEIGHT = screen.get_size()
 
     # Set font
@@ -1172,7 +1205,15 @@ def login():
     pygame.quit()
 
 def signup():
+    """
+    Displays a signup screen where users can create a new account for KanBoard.5.
 
+    The function sets up the screen, handles user input for entering a new username and password,
+    and provides buttons for signing up or going back to the login screen. It validates the input,
+    checks if the username is already taken, and creates a new account by appending the username and password
+    to a CSV file. If the signup is successful, it displays a confirmation message and transitions to the login screen.
+
+    """
     # Set up the screen
     screen_width, screen_height = pygame.display.get_surface().get_size()
 
