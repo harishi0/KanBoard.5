@@ -242,21 +242,30 @@ def load_whiteboard(button_choice, username):
 
 def choose_color():
     '''
-    Used tkinter to open a pop up rgb selector window. This window allows the user to select a color and return it as a tuple.
-    If no color was selected from the rgb picker, the color is automatically set to black. 
+    Use tkinter to open a pop-up RGB selector window. This window allows the user to select a color and return it as a tuple.
+    If no color was selected from the RGB picker, the color is automatically set to black. Also, the rgb window is made so that
+    you cannot minimize it when open forcing the user to select a color.
     Parameter: N/A
-    Return: Return tuple(int(c) for c in color[0]) to that the tuple can be used as a color for drawing
+    Return: Return tuple(int(c) for c in color[0]) so that the tuple can be used as a color for drawing
     Return: Return BLACK if nothing is selected
     '''
+    
+    #Calling Tkinter
     root = tk.Tk()
     root.withdraw()
-    color = colorchooser.askcolor()
-    if color[0] is not None:
+    
+    #Keep the window on top of others
+    root.attributes("-topmost", True)  
+    color = colorchooser.askcolor(parent=root)
+    if color[1] is not None:
+        root.attributes("-topmost", False)  
+        root.destroy()  
         return tuple(int(c) for c in color[0])
     else:
-        # Handle the case where no color was selected
-        # You can choose to return a default color or handle it differently
-        return BLACK  # Returning black color as an example
+        #Handle the case where no color was selected
+        root.attributes("-topmost", False) 
+        root.destroy()  
+        return (BLACK)  
 
 def run_whiteboard(username):
     '''
