@@ -1364,20 +1364,20 @@ def signup():
                             if signup_username == "" or signup_password == "":
                                 invalid_signup_text = "Invalid username or password"
                                 break
-                            elif signup_username in row:
+                            elif signup_username.strip() == row[0].strip():  # Strip leading/trailing spaces
                                 invalid_signup_text = "Username already taken"
                                 break
-                            else:
-                                # Append the new username and password on a new row
-                                with open(file_name, "a", newline="") as csv_file:
-                                    csv_file.write("\n" + signup_username + "," + signup_password)
-                                confirm_signup_font = pygame.font.Font(None, 36)
-                                confirm_signup_text = confirm_signup_font.render("Account created", True, GREEN)
-                                confirm_signup_text_rect = confirm_signup_text.get_rect(center=screen.get_rect().center)
-                                screen.blit(confirm_signup_text, confirm_signup_text_rect, screen.fill(WHITE))
-                                pygame.display.flip()
-                                pygame.time.wait(1 * 1000)
-                                login()
+                        else:  # Move the else block to the correct location (outside the for loop)
+                            # Append the new username and password on a new row
+                            with open(file_name, "a", newline="") as csv_file:
+                                csv_file.write("\n" + signup_username + "," + signup_password)
+                            confirm_signup_font = pygame.font.Font(None, 36)
+                            confirm_signup_text = confirm_signup_font.render("Account created", True, GREEN)
+                            confirm_signup_text_rect = confirm_signup_text.get_rect(center=screen.get_rect().center)
+                            screen.blit(confirm_signup_text, confirm_signup_text_rect, screen.fill(WHITE))
+                            pygame.display.flip()
+                            pygame.time.wait(1 * 1000)
+                            login()
                 else:
                     if signup_active_field == "signup_username":
                         if len(signup_username) < max_length_login_signup:
@@ -1404,20 +1404,20 @@ def signup():
                             if signup_username == "" or signup_password == "":
                                 invalid_signup_text = "Invalid username or password"
                                 break
-                            elif signup_username in row:
+                            elif signup_username.strip() == row[0].strip():  # Strip leading/trailing spaces
                                 invalid_signup_text = "Username already taken"
                                 break
-                            else:
-                                # Append the new username and password on a new row
-                                with open(file_name, "a", newline="") as csv_file:
-                                    csv_file.write("\n" + signup_username + "," + signup_password)
-                                confirm_signup_font = pygame.font.Font(None, 36)
-                                confirm_signup_text = confirm_signup_font.render("Account created", True, GREEN)
-                                confirm_signup_text_rect = confirm_signup_text.get_rect(center=screen.get_rect().center)
-                                screen.blit(confirm_signup_text, confirm_signup_text_rect, screen.fill(WHITE))
-                                pygame.display.flip()
-                                pygame.time.wait(1 * 1000)
-                                login()
+                        else:  # Move the else block to the correct location (outside the for loop)
+                            # Append the new username and password on a new row
+                            with open(file_name, "a", newline="") as csv_file:
+                                csv_file.write("\n" + signup_username + "," + signup_password)
+                            confirm_signup_font = pygame.font.Font(None, 36)
+                            confirm_signup_text = confirm_signup_font.render("Account created", True, GREEN)
+                            confirm_signup_text_rect = confirm_signup_text.get_rect(center=screen.get_rect().center)
+                            screen.blit(confirm_signup_text, confirm_signup_text_rect, screen.fill(WHITE))
+                            pygame.display.flip()
+                            pygame.time.wait(1 * 1000)
+                            login()
                 elif back_signup_button.collidepoint(mouse_pos):
                     login() 
         screen.fill(WHITE)
