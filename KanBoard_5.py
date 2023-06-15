@@ -1404,10 +1404,10 @@ def signup():
                             if signup_username == "" or signup_password == "":
                                 invalid_signup_text = "Invalid username or password"
                                 break
-                            elif signup_username.strip() == row[0].strip():  # Strip leading/trailing spaces
+                            elif signup_username.strip() == row[0].strip():  
                                 invalid_signup_text = "Username already taken"
                                 break
-                        else:  # Move the else block to the correct location (outside the for loop)
+                        else:  
                             # Append the new username and password on a new row
                             with open(file_name, "a", newline="") as csv_file:
                                 csv_file.write("\n" + signup_username + "," + signup_password)
